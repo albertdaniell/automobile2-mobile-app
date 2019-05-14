@@ -31,7 +31,7 @@ import {
     Fab,
     Button,
     Icon,
-    DatePicker
+    DatePicker,Grid,Col
 } from 'native-base';
 var todayDate = new Date()
     .toString()
@@ -47,8 +47,9 @@ export default class Home extends Component < Props > {
         this.state = {
             active: false,
             chosenDate: "",
-            isLoading:false
-
+            isLoading:false,
+            form1Complete:false,
+            vehicles:[]
         };
     }
 
@@ -61,6 +62,27 @@ export default class Home extends Component < Props > {
 
         this.setState({chosenDate: todayDate})
    
+    }
+
+    submitFn1=()=>{
+        this.setState({
+            form1Complete:true
+        })
+    }
+
+    addVehicle=()=>{
+        this.setState({
+            vehicles:[...this.state.vehicles,""]
+        })
+    }
+
+    removeVehicle=(index)=>{
+        
+        this.state.vehicles.splice(index,1)
+
+        this.setState({
+            vehicle:this.state.vehicles
+        })
     }
     render() {
         return (
@@ -82,7 +104,68 @@ export default class Home extends Component < Props > {
                     
                     <View style={styles.container}>
                         
-                        <KeyboardAvoidingView behavior='position' enabled>
+                       
+
+                     {
+                         this.state.form1Complete?
+                         <View style={styles.form2}>
+                            <Text style={styles.label}>Vehicle category</Text>
+
+                           {
+                               this.state.vehicles.map((vehicle,index)=>{
+                                   return (
+
+                                    <Grid key={index}>
+          <Col style={{ width:'80%' }}>
+          <TextInput autoFocus={true} style={{flex:0.9}}  style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
+
+          </Col>
+          <Col style={{ width:'20%',marginTop:10 }}>
+          <TouchableOpacity style={{color:'white'}}><Text styles={{color:'white'}} onPress={(index)=>this.removeVehicle(index)}>Remove</Text></TouchableOpacity>
+
+          </Col>
+        </Grid>
+
+
+                                      
+                                   )
+                               })
+                           }
+
+                           <TouchableOpacity style={{padding:10,backgroundColor:'#ededed',width:'30%',alignItems:'center'}} onPress={this.addVehicle}>
+                               <Text>Add vehicle</Text>
+                           </TouchableOpacity>
+                      <KeyboardAvoidingView>
+                   
+                      <ImageBackground
+                                    imageStyle={{
+                                    borderRadius: 50
+                                }}
+                                    style={{
+                                    padding: 10,
+                                    borderRadius: 20,
+                                    marginTop: 20
+                                }}
+                                    source={require('../../android/assets/images/bg.png')}>
+                                    <TouchableOpacity
+                                
+                                        style={{
+                                        width: '100%',
+                                        alignItems: 'center',
+                                        borderRadius: 10
+                                    }}>
+                                        <Text
+                                            style={{
+                                            color: '#fff',
+                                            letterSpacing: 10,
+                                            textTransform: 'uppercase',
+                                            padding: 10
+                                        }}>finish</Text>
+
+                                    </TouchableOpacity>
+                                </ImageBackground>
+                            </KeyboardAvoidingView>
+                      </View>: <KeyboardAvoidingView behavior='position' enabled>
                             <View style={styles.companyName}>
                                 
                                 <Text style={styles.label}>Company name</Text>
@@ -127,7 +210,7 @@ export default class Home extends Component < Props > {
                                 }}
                                     source={require('../../android/assets/images/bg.png')}>
                                     <TouchableOpacity
-                                
+                                onPress={this.submitFn1}
                                         style={{
                                         width: '100%',
                                         alignItems: 'center',
@@ -145,10 +228,14 @@ export default class Home extends Component < Props > {
                                 </ImageBackground>
                             </View>
                         </KeyboardAvoidingView>
+                     }
+                   
 
                     </View>
-                </ScrollView>
 
+                    
+                </ScrollView>
+            
             </FadeIn>
 
         );
@@ -199,5 +286,7 @@ const styles = StyleSheet.create({
         alignItems:'center'
        
         
+    },
+    form2:{
     }
 });
