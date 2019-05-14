@@ -75,6 +75,7 @@ export default class Splash extends Component < Props > {
                     <View style={styles.loginView}>
 
                         <TextInput
+                        autoFocus={true}
                             placeholder='Email'
                             keyboardType='email-address'
                             style={styles.myInput}/>

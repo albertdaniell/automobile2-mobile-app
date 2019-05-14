@@ -20,6 +20,7 @@ import {
     ScrollView,
     ActivityIndicator
 } from 'react-native';
+
 import {NavigationActions} from 'react-navigation';
 import FadeIn from '../anime/FadeIn'
 import {
@@ -31,12 +32,18 @@ import {
     Fab,
     Button,
     Icon,
-    DatePicker,Grid,Col
+    DatePicker,Grid,Col,Badge
 } from 'native-base';
 var todayDate = new Date()
     .toString()
     .substr(4, 12);
 // Import Navigation
+
+
+//firebase
+import firebase from '../Firebase'
+var db=firebase.firestore()
+
 
 type Props = {};
 export default class Home extends Component < Props > {
@@ -49,7 +56,19 @@ export default class Home extends Component < Props > {
             chosenDate: "",
             isLoading:false,
             form1Complete:false,
-            vehicles:[]
+            vehicles:[],
+            vehicleInput:'',
+            companyName:'',
+            companyLocation:'',
+            Geocoordinates:'',
+            dateOfEntry:'',
+            userId:'',
+            Username:'',
+            Approved:true,
+            delete_status:false,
+            showSubmitBtn:true
+
+            
         };
     }
 
@@ -60,25 +79,106 @@ export default class Home extends Component < Props > {
 
     componentDidMount() {
 
-        this.setState({chosenDate: todayDate})
+        this.setState({chosenDate: todayDate,dateOfEntry:todayDate})
    
     }
 
-    submitFn1=()=>{
-        this.setState({
-            form1Complete:true
+    submitFn1=async()=>{
+       const step1= this.setState({
+            
+            isLoading:true,
+            showSubmitBtn:false
         })
+     
+
+        const step2=await step1
+        
+     setTimeout(()=>{
+
+        this.setState({
+            form1Complete:true,
+            isLoading:false,
+            showSubmitBtn:true
+        })
+
+     },100)
+    }
+
+    submitFn2=async()=>{
+
+        
+
+     
+        console.log(this.state.vehicles)
+        var ref=db.collection('companies')
+        var companyRef=ref.add({
+            companyName:this.state.companyName,
+            companyLocation:this.state.companyLocation,
+            geo:this.state.Geocoordinates,
+            dateOfVisit:this.state.chosenDate,
+            dateOfEntry:this.state.dateOfEntry,
+            userId:this.state.userId,
+            Userame:this.state.Username,
+            Approved:this.state.Approved,
+            delete_status:this.state.delete_status
+
+        }).then((docRef)=>{
+            console.log("Addedd successfully with id"+docRef.id)
+
+            setTimeout(()=>{
+
+                var vref=db.collection('vehicles')
+                vref.add({
+                    companyId:docRef.id,
+                    companyName:this.state.companyName,
+                    userid:'',
+                    Username:'',
+                    vehicles:this.state.vehicles
+                })
+
+            },1000)
+        }).catch(error=>{
+            console.log(error)
+        })
+
+      
     }
 
     addVehicle=()=>{
+
+        if(this.state.vehicleInput === ''){
+            alert("Input cannot be empty, if you are done click the finish button below")
+
+            return 0;
+        }
+     
+const {vehicles} = this.state.vehicles;
+const newItem= this.state.vehicleInput
+
         this.setState({
-            vehicles:[...this.state.vehicles,""]
+            vehicles:[...this.state.vehicles,newItem],
+            
         })
+    }
+
+
+    addVehicleCat=(vehicle,index)=>{
+
+        //console.log("Updating "+ vehicle)
+
+        this.state.vehicles[index]=vehicle
+        this.setState({
+            vehicles:this.state.vehicles
+        })
+
+        console.log("Vehicles"+this.state.vehicles)
     }
 
     removeVehicle=(index)=>{
         
         this.state.vehicles.splice(index,1)
+
+        console.log(this.state.vehicles,"$$$$")
 
         this.setState({
             vehicle:this.state.vehicles
@@ -109,15 +209,44 @@ export default class Home extends Component < Props > {
                      {
                          this.state.form1Complete?
                          <View style={styles.form2}>
+                             <TouchableOpacity
+                             onPress={()=>this.setState({form1Complete:false})}
+                              style={{padding:10}}>
+                                 <Text>Go back to previous</Text>
+                             </TouchableOpacity>
                             <Text style={styles.label}>Vehicle category</Text>
 
-                           {
+{
+    this.state.vehicles.map((vehicle,index)=>{
+        return(
+
+            <Grid key={index}>
+          <Col style={{ width:'50%',marginTop:10 }}>
+          <View disabled   style={{flex:0.9,padding:2}} placeholder='Enter the vehicle category'>
+          <Badge success>
+          <Text style={{padding:2,color:'white'}}>{vehicle} </Text>
+          </Badge>
+             
+          </View>
+
+          </Col>
+          <Col style={{ width:'20%',marginTop:10 }}>
+          <TouchableOpacity style={{color:'white',backgroundColor:'#ffa6a0',padding:2,alignItems:'center',borderRadius:10}}><Text styles={{color:'white'}} onPress={(index)=>this.removeVehicle(index)}>Remove</Text></TouchableOpacity>
+
+          </Col>
+        </Grid>
+            //<Text key={index} onPress={this.removeVehicle}>Vehicle : {vehicle} - </Text>
+        )
+    })
+}
+
+                           {/* {
                                this.state.vehicles.map((vehicle,index)=>{
                                    return (
 
                                     <Grid key={index}>
           <Col style={{ width:'80%' }}>
-          <TextInput autoFocus={true} style={{flex:0.9}}  style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
+          <TextInput onChangeText={(vehicle,index)=>this.addVehicleCat(index,vehicle)} autoFocus={true} style={{flex:0.9}}  style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
 
           </Col>
           <Col style={{ width:'20%',marginTop:10 }}>
@@ -130,11 +259,27 @@ export default class Home extends Component < Props > {
                                       
                                    )
                                })
-                           }
+                           } */}
 
-                           <TouchableOpacity style={{padding:10,backgroundColor:'#ededed',width:'30%',alignItems:'center'}} onPress={this.addVehicle}>
-                               <Text>Add vehicle</Text>
-                           </TouchableOpacity>
+
+                           <Grid>
+          <Col style={{ width:'80%',marginTop:10 }}>
+          <TextInput  onChangeText={(vehicleInput)=>this.setState({vehicleInput})} autoFocus={true} style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
+
+
+          </Col>
+
+          <Col style={{ width:'20%',marginTop:10 }}>
+          <TouchableOpacity onPress={this.addVehicle} style={{alignItems:'center',marginTop:10,backgroundColor:'#ccc',padding:10}}>
+              <Text>Add</Text>
+          </TouchableOpacity>
+
+
+          </Col>
+   
+        </Grid>
+
+
                       <KeyboardAvoidingView>
                    
                       <ImageBackground
@@ -148,7 +293,7 @@ export default class Home extends Component < Props > {
                                 }}
                                     source={require('../../android/assets/images/bg.png')}>
                                     <TouchableOpacity
-                                
+                                onPress={this.submitFn2}
                                         style={{
                                         width: '100%',
                                         alignItems: 'center',
@@ -165,13 +310,13 @@ export default class Home extends Component < Props > {
                                     </TouchableOpacity>
                                 </ImageBackground>
                             </KeyboardAvoidingView>
-                      </View>: <KeyboardAvoidingView behavior='position' enabled>
+                      </View>: <KeyboardAvoidingView behavior='padding' enabled>
                             <View style={styles.companyName}>
                                 
                                 <Text style={styles.label}>Company name</Text>
-                                <TextInput style={styles.myInput} placeholder='Enter name of company'></TextInput>
+                                <TextInput value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of company'></TextInput>
                                 <Text style={styles.label}>Company location</Text>
-                                <TextInput style={styles.myInput} placeholder='Enter location of company'></TextInput>
+                                <TextInput value={this.state.companyLocation} onChangeText={(companyLocation)=>this.setState({companyLocation})} style={styles.myInput} placeholder='Enter location of company'></TextInput>
                                 <Text style={styles.label}>Geo-coorinates</Text>
 
                                 <TextInput style={styles.myInput} placeholder='Company Name'></TextInput>
@@ -197,9 +342,9 @@ export default class Home extends Component < Props > {
     .substr(4, 12)})}
                                         disabled={false}/>
                                 </View>
-
-
-                                <ImageBackground
+{
+    this.state.showSubmitBtn?
+    <ImageBackground
                                     imageStyle={{
                                     borderRadius: 50
                                 }}
@@ -225,7 +370,10 @@ export default class Home extends Component < Props > {
                                         }}>Submit</Text>
 
                                     </TouchableOpacity>
-                                </ImageBackground>
+                                </ImageBackground>:null
+}
+
+                               
                             </View>
                         </KeyboardAvoidingView>
                      }
