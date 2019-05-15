@@ -15,7 +15,7 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,Image
 } from 'react-native';
 import {
     Container,
@@ -72,18 +72,32 @@ export default class Splash extends Component < Props > {
                         }}>Login</Text>
 
                     </View>
+                  
+
                     <View style={styles.loginView}>
 
-                        <TextInput
+                    <Item style={{borderBottomColor:'transparent',borderBottomColor:'white',borderBottomWidth:0}}>
+
+                    <Image style={{height:20,width:30,padding:5}} source={require('../../android/assets/images/envelope.png')}></Image>
+
+         
+            <Input
                         autoFocus={true}
                             placeholder='Email'
                             keyboardType='email-address'
                             style={styles.myInput}/>
+          </Item>
 
-                        <TextInput
+          <Item style={{borderBottomColor:'transparent',borderBottomColor:'white',borderBottomWidth:0}}>
+          <Image style={{height:30,width:25,padding:5}} source={require('../../android/assets/images/key.png')}></Image>
+          <Input
                             placeholder='Password'
                             secureTextEntry={true}
                             style={styles.myInput}/>
+          </Item>
+
+
+                      
 
                         <ImageBackground
                             imageStyle={{

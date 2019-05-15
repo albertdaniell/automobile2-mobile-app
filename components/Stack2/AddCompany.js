@@ -18,7 +18,7 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     ScrollView,
-    ActivityIndicator
+    ActivityIndicator,YellowBox,Image
 } from 'react-native';
 
 import {NavigationActions} from 'react-navigation';
@@ -51,6 +51,8 @@ export default class Home extends Component < Props > {
     constructor(props) {
 
         super(props)
+        YellowBox.ignoreWarnings(['Setting a timer']);
+        YellowBox.ignoreWarnings(['Failer prop type']);
         this.state = {
             active: false,
             chosenDate: "",
@@ -66,7 +68,8 @@ export default class Home extends Component < Props > {
             Username:'',
             Approved:true,
             delete_status:false,
-            showSubmitBtn:true
+            showSubmitBtn:true,
+            showFinishBtn:true
 
             
         };
@@ -101,45 +104,79 @@ export default class Home extends Component < Props > {
             showSubmitBtn:true
         })
 
-     },100)
+     },300)
     }
 
     submitFn2=async()=>{
 
+        const step1= this.setState({
+            
+            isLoading:true,
+            showFinishBtn:false
+        })
+
+        setTimeout(()=>{
+
+
+            var ref=db.collection('companies')
+            var companyRef=ref.add({
+                companyName:this.state.companyName,
+                companyLocation:this.state.companyLocation,
+                geo:this.state.Geocoordinates,
+                dateOfVisit:this.state.chosenDate,
+                dateOfEntry:this.state.dateOfEntry,
+                userId:this.state.userId,
+                Userame:this.state.Username,
+                Approved:this.state.Approved,
+                delete_status:this.state.delete_status
+    
+            }).then((docRef)=>{
+               // alert("Success!")
+                this.props.navigation.replace('ViewCompany',{compId:docRef.id})
+                console.log("Addedd successfully with id"+docRef.id)
+    
+                setTimeout(()=>{
+    
+                    var vref=db.collection('vehicles')
+                    vref.add({
+                        companyId:docRef.id,
+                        companyName:this.state.companyName,
+                        userid:'',
+                        Username:'',
+                        vehicles:this.state.vehicles
+                    })
+    
+                },1000)
+            }).catch(error=>{
+
+        this.setState({
+            
+            isLoading:false,
+            showFinishBtn:true
+        })
+
+        alert(error)
+                console.log(error)
+            })
+        },1000)
+     
+
+        const step2=await step1
+        
+     setTimeout(()=>{
+
+        this.setState({
+            
+            isLoading:false,
+            showFinishBtn:true
+        })
+
+     },2000)
+
         
 
-     
-        console.log(this.state.vehicles)
-        var ref=db.collection('companies')
-        var companyRef=ref.add({
-            companyName:this.state.companyName,
-            companyLocation:this.state.companyLocation,
-            geo:this.state.Geocoordinates,
-            dateOfVisit:this.state.chosenDate,
-            dateOfEntry:this.state.dateOfEntry,
-            userId:this.state.userId,
-            Userame:this.state.Username,
-            Approved:this.state.Approved,
-            delete_status:this.state.delete_status
-
-        }).then((docRef)=>{
-            console.log("Addedd successfully with id"+docRef.id)
-
-            setTimeout(()=>{
-
-                var vref=db.collection('vehicles')
-                vref.add({
-                    companyId:docRef.id,
-                    companyName:this.state.companyName,
-                    userid:'',
-                    Username:'',
-                    vehicles:this.state.vehicles
-                })
-
-            },1000)
-        }).catch(error=>{
-            console.log(error)
-        })
+    
+    
 
       
     }
@@ -231,7 +268,8 @@ const newItem= this.state.vehicleInput
 
           </Col>
           <Col style={{ width:'20%',marginTop:10 }}>
-          <TouchableOpacity style={{color:'white',backgroundColor:'#ffa6a0',padding:2,alignItems:'center',borderRadius:10}}><Text styles={{color:'white'}} onPress={(index)=>this.removeVehicle(index)}>Remove</Text></TouchableOpacity>
+          <TouchableOpacity onPress={(index)=>this.removeVehicle(index)} style={{padding:2,alignItems:'center',borderRadius:10,marginTop:2}}><Image style={{height:20,width:20}} source={require('../../android/assets/images/cancel.png')} >
+              </Image></TouchableOpacity>
 
           </Col>
         </Grid>
@@ -240,26 +278,7 @@ const newItem= this.state.vehicleInput
     })
 }
 
-                           {/* {
-                               this.state.vehicles.map((vehicle,index)=>{
-                                   return (
-
-                                    <Grid key={index}>
-          <Col style={{ width:'80%' }}>
-          <TextInput onChangeText={(vehicle,index)=>this.addVehicleCat(index,vehicle)} autoFocus={true} style={{flex:0.9}}  style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
-
-          </Col>
-          <Col style={{ width:'20%',marginTop:10 }}>
-          <TouchableOpacity style={{color:'white'}}><Text styles={{color:'white'}} onPress={(index)=>this.removeVehicle(index)}>Remove</Text></TouchableOpacity>
-
-          </Col>
-        </Grid>
-
-
-                                      
-                                   )
-                               })
-                           } */}
+                   
 
 
                            <Grid>
@@ -270,8 +289,9 @@ const newItem= this.state.vehicleInput
           </Col>
 
           <Col style={{ width:'20%',marginTop:10 }}>
-          <TouchableOpacity onPress={this.addVehicle} style={{alignItems:'center',marginTop:10,backgroundColor:'#ccc',padding:10}}>
-              <Text>Add</Text>
+          <TouchableOpacity onPress={this.addVehicle} style={{alignItems:'center',marginTop:10,backgroundColor:'#ccc',padding:13}}>
+          <Image style={{height:25,width:25}} source={require('../../android/assets/images/plus-black.png')} >
+              </Image>
           </TouchableOpacity>
 
 
@@ -282,7 +302,9 @@ const newItem= this.state.vehicleInput
 
                       <KeyboardAvoidingView>
                    
-                      <ImageBackground
+              {
+                  this.state.showFinishBtn?
+                  <ImageBackground
                                     imageStyle={{
                                     borderRadius: 50
                                 }}
@@ -309,6 +331,8 @@ const newItem= this.state.vehicleInput
 
                                     </TouchableOpacity>
                                 </ImageBackground>
+                                :null
+              }
                             </KeyboardAvoidingView>
                       </View>: <KeyboardAvoidingView behavior='padding' enabled>
                             <View style={styles.companyName}>

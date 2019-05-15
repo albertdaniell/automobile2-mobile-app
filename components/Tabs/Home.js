@@ -8,36 +8,114 @@
 
 import React, {Component} from 'react';
 import {
-    Platform,
+    Platform,Image,
     StyleSheet,
     Text,
     View,
     ImageBackground,
-    StatusBar,ScrollView
+    StatusBar,
+    TextInput,
+    KeyboardAvoidingView,
+    ScrollView,
+    ActivityIndicator,YellowBox, FlatList,AppState
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 import FadeIn from '../anime/FadeIn'
 import {
     Container,
     Header,
+    Title,
     Content,
+    Form,
     Item,
-    Input,
-    Fab,
+    Label,
+    Footer,
+    FooterTab,
     Button,
-    Icon
+    Left,
+    Right,
+    Body,
+    Icon,
+Fab,
+    Tabs,
+    Tab,
+    TabHeading,
+    List,
+    ListItem,
+    Input,
+    Grid,
+Col
 } from 'native-base';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // Import Navigation
+
+//firebase
+import firebase from '../Firebase'
+var db = firebase.firestore()
+
 
 type Props = {};
 export default class Home extends Component < Props > {
 
     constructor(props) {
         super(props)
+        YellowBox.ignoreWarnings(['Setting a timer']);
+        YellowBox.ignoreWarnings(['Failed prop type']);
+        YellowBox.ignoreWarnings(["Can't perform a React state update on an unmounted component"]);
+
         this.state = {
-            active: false
+            active: false,
+            companies:[],
+            isLoading: true,
+            appState: AppState.currentState,
+            isLoading: true,
         };
+    }
+
+    componentDidMount() {
+
+        AppState.addEventListener('change', this.handleAppStateChange);
+
+        setTimeout(()=>{
+            this.getAllCompanies()
+        },1000)
+      }
+
+      handleAppStateChange = (nextAppState) => {
+         // alert(0)
+        if (
+          this.state.appState.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+            this.getAllCompanies()
+            //alert("app has come to foreground")
+          console.log('App has come to the foreground!');
+        }
+        this.setState({appState: nextAppState});
+      };
+
+    getAllCompanies=()=>{
+        this.setState({
+            isLoading:true
+        })
+        const companies = [];
+
+        var ref=db.collection('companies')
+
+        ref.get().then((querysnapShot)=>{
+           querysnapShot.forEach(doc=>{
+            const {companyName,companyLocation}=doc.data()
+            companies.push({
+                key:doc.id,
+                doc,companyName,
+                companyLocation
+            })
+
+            this.setState({companies,isLoading:false})
+           })
+        })
+
     }
     loadGetStarted = async() => {
 
@@ -50,7 +128,13 @@ export default class Home extends Component < Props > {
 
     }
 
-    componentDidMount() {}
+    pull = () => {
+        this.getAllCompanies()
+
+        
+}
+
+    
     render() {
         return (
 
@@ -58,13 +142,54 @@ export default class Home extends Component < Props > {
                 <StatusBar backgroundColor="purple" barStyle="light-content"/>
 
                 <View style={styles.container}>
-                 <ScrollView>
-                 <Text
+                 
+                   
+                     <Text 
                         style={{
                         fontSize: 30,
                         padding: 10
-                    }}>Explore Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio nam laborum laboriosam ipsa ad quidem, temporibus delectus, dolorem rerum cum aliquam, commodi voluptate neque doloremque. Consectetur consequatur magni nihil neque. Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet earum cupiditate aliquid nostrum numquam molestias tempore ab? Libero dicta modi, eaque officia dolorem, recusandae et nemo veritatis quasi reprehenderit optio? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod quae natus qui quos minima eos, harum sed nihil neque doloremque corporis nulla libero ratione, numquam repellat quam! Saepe, veniam animi.</Text>
-                 </ScrollView>
+                    }}>Explore</Text>
+               <View style={{backgroundColor:'#ededed',margin:10,borderRadius:10,borderBottomWidth:0,borderBottomColor:'transparent'}}>
+               <Item style={{borderBottomWidth:0}}>
+        
+            <Input placeholder="Search" />
+       
+          </Item>
+               </View>
+
+                     <FlatList
+                    onRefresh={this.pull}
+                    refreshing={this.state.isLoading}
+                    data={this.state.companies}
+                    
+                    renderItem={({item}) => <ListItem key={item.key} avatar>
+                    <Left>
+                    <Image style={{height:20,width:20,marginTop:10}} source={require('../../android/assets/images/company.png')}></Image>
+
+                    </Left>
+                    <Body>
+                        <TouchableOpacity 
+                        onPress={()=>this.props.navigation.navigate('ViewCompany',{
+                            compId:item.key
+                        })}
+                        >
+                            <Text
+                                style={{
+                                marginBottom: 5,
+                                padding: 2
+                            }}>{item.companyName} </Text>
+                            <Text note style={{fontSize:12,color:'#ccc'}}>{item.companyLocation}</Text>
+                        </TouchableOpacity>
+
+                       
+                    </Body>
+                    <Right>
+                    <Image style={{height:10,width:10,marginTop:10}} source={require('../../android/assets/images/arrow-right.png')}></Image>
+
+                    </Right>
+</ListItem>}/>
+              
+               
                  
                 </View>
 
@@ -77,7 +202,7 @@ export default class Home extends Component < Props > {
                     }}
                         position="bottomRight"
                         onPress={()=>this.props.navigation.navigate('AddCompany')}>
-                        <Icon name="share"/>
+                      <Image style={{height:30,width:30}} source={require('../../android/assets/images/plus-white.png')}></Image>
 
                     </Fab>
             </FadeIn>

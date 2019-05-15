@@ -21,12 +21,21 @@ import HomeScreen from './components/Tabs/Home'
 
 
 import AddCompany from './components/Stack2/AddCompany'
+import ViewCompany from './components/Stack2/ViewCompany'
+import Account from './components/Tabs/Account'
+import AutomationDetails from './components/Stack2/AutomationDetails'
 
 
 
 const TabNavigator = createBottomTabNavigator({
     Home: {
         screen: HomeScreen,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Account:{
+        screen:Account,
         navigationOptions: {
             header: null
         }
@@ -64,7 +73,19 @@ const AppNavigator1 = createStackNavigator({
       navigationOptions:{
         title:'Add Motor Company'
       }
-    }
+    },
+    ViewCompany:{
+        screen:ViewCompany,
+        navigationOptions:{
+          title:'View company'
+        }
+      },
+      AutomationDetails:{
+          screen:AutomationDetails,
+          navigationOptions:{
+            title:'Add Automation Details'
+          }
+      }
 
 })
 
