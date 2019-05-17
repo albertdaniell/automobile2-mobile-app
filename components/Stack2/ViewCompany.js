@@ -62,7 +62,12 @@ export default class ViewCompany extends Component < Props > {
             isLoading: true,
             companyDataExists:false,
             softwareExists:null,
-            softwareName:''
+            softwareName:'',
+            UserId:'',
+            EntryOwner:false,
+            EntryBy:'',
+            UserRole:'',
+            superUser:false,
         };
     }
     loadGetStarted = async() => {
@@ -164,8 +169,23 @@ setTimeout(()=>{
                             .companyLocation,
                         dateOfVisit: doc
                             .data()
-                            .dateOfVisit
+                            .dateOfVisit,
+                            EntryBy:doc
+                            .data()
+                            .userId
                     })
+                  // alert(this.state.EntryBy)
+
+                    // if(this.state.EntryBy === this.state.UserId){
+                    //     // this.setState({
+                    //     //     EntryOwner:true
+                    //     // })
+
+                    //     alert("This is the owner of the post")
+                    // }
+                    // else{
+                    //     alert("Not owner of post")
+                    // }
 
                  
 
@@ -219,14 +239,31 @@ setTimeout(()=>{
     }
 
     componentDidMount() {
-        
+       
 
         const compId = this
             .props
             .navigation
             .getParam('compId', 'NO-ID');
+        
+        const UserId = this
+            .props
+            .navigation
+            .getParam('UserId', 'NO-USERID');
+          
+        const UserRole = this
+        .props
+        .navigation
+        .getParam('UserRole', 'NO-USERole');
 
-        this.setState({compId: compId})
+        if(UserRole === '1'){
+           this.setState({
+            superUser:true
+           })
+        }
+
+
+        this.setState({compId: compId,UserId:UserId,UserRole:UserRole})
         setTimeout(()=>{
             this.getAutomobile() 
         },1000)
@@ -362,11 +399,14 @@ setTimeout(()=>{
                                                
                                             </View>
                                            {
-                                               this.state.companyDataExists?<View>
+                                               this.state.companyDataExists?
+                                               
+                                               <View>
                                                    <Text>Software exits {this.state.softwareExists}</Text>
                                                    <Text>Software name {this.state.softwareName}</Text>
                                                    </View>:
-                                               <TouchableOpacity
+                                             this.state.superUser?
+                                             <TouchableOpacity
                                             onPress={()=>this.props.navigation.navigate('AutomationDetails',{compId:this.state.compId, compName:this.state.compName})}
                                                 style={{
                                                 alignItems: 'center',
@@ -376,7 +416,7 @@ setTimeout(()=>{
                                                 borderRadius: 50
                                             }}>
                                                 <Text>Add data</Text>
-                                            </TouchableOpacity>
+                                            </TouchableOpacity>:<Text>No data available</Text>
                                            }
                                         </View>
 }
@@ -389,7 +429,7 @@ setTimeout(()=>{
                     }
                     {
     this.state.companyDataExists?
-
+    this.state.superUser?
     <Fab
                         active={this.state.active}
                         direction="up"
@@ -401,7 +441,10 @@ setTimeout(()=>{
                        >
                       <Image style={{height:30,width:30}} source={require('../../android/assets/images/edit.png')}></Image>
 
-                    </Fab>:null
+                    </Fab>
+    :null
+
+    :null
 }
                     </ImageBackground>
 

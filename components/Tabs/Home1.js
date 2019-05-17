@@ -28,7 +28,7 @@ export default class Home1 extends Component < Props > {
     }
 
     componentDidMount(){
-       
+      
     }
     render() {
         return (

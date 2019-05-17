@@ -15,7 +15,7 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableOpacity,Image
+    TouchableOpacity,Image,YellowBox,ActivityIndicator
 } from 'react-native';
 import {
     Container,
@@ -38,19 +38,35 @@ type Props = {};
 export default class Splash extends Component < Props > {
     constructor(props) {
         super(props)
+        YellowBox.ignoreWarnings(['Setting a timer']);
+        YellowBox.ignoreWarnings(['Failed prop type']);
+        YellowBox.ignoreWarnings(["Can't perform a React state update on an unmounted component"]);
+
+
+
         this.state = {
 
             Email:'',
-            Password:''
+            Password:'',
+            isLoading:false
         };
     }
     logInFn=()=>{
-        //alert(0)
+        this.setState({
+            isLoading:true
+        })
 var ref=db.collection('users')
 firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
 .then(()=>{
     this.loadHomePage()
+
+    this.setState({
+        isLoading:false
+    })
 }).catch(error=>{
+    this.setState({
+        isLoading:false
+    })
     alert(error.message)
 })
     }
@@ -75,7 +91,15 @@ firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
                 behavior='height'
                 enabled>
                 <View style={styles.container}>
+                {
+                  this.state.isLoading?  <View style={styles.loadingdiv}>
+                   <View style={{backgroundColor:'#fff',padding:20,borderRadius:5}}>
+                   <ActivityIndicator size="large" color="orange" />
 
+                   </View>
+
+                </View>:null
+              }
                     <View
                         style={{
                         width: '100%',
@@ -201,5 +225,18 @@ const styles = StyleSheet.create({
         padding: 10,
         marginLeft: 10,
         marginRight: 10
-    }
+    },
+
+    loadingdiv:{
+        backgroundColor:'rgba(0,0,0,.7)',
+        height:'100%',
+        zIndex:10,
+        position:'absolute',
+        width:'100%',
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center'
+       
+        
+    },
 });

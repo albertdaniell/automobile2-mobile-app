@@ -36,7 +36,11 @@ export default class Splash extends Component < Props > {
 
 
 
-        this.state={}
+        this.state={
+            Email:'',
+            Role:'',
+            Username:''
+        }
     }
 
     loadGetStarted=()=>{
@@ -46,18 +50,39 @@ export default class Splash extends Component < Props > {
                 .props
                 .navigation
                 .reset([NavigationActions.navigate({routeName: 'GetStarted'})], 0)
-        }, 1000)
+        }, 1500)
 
     }
 
     checkUser=()=>{
         firebase.auth().onAuthStateChanged((user)=> {
             if (user) {
+//update state
+
+this.setState({
+    Email:user.email
+})
+                //get user datails
+
+
+        var ref=db.collection('users')
+        var userRef=ref.where("Email","==",user.email)
+        userRef.get().then(dataSnap=>{
+            dataSnap.forEach((doc)=>{
+                this.setState({
+                    Username:doc.data().Username,
+                    Role:doc.data().Role
+                })
+               // alert(this.state.Role)
+            })
+        })
            this.loadHomePage()
             } else {
              this.loadGetStarted()
             }
           });
+
+        
           
     }
 
@@ -70,7 +95,7 @@ export default class Splash extends Component < Props > {
                 .props
                 .navigation
                 .reset([NavigationActions.navigate({routeName: 'Home1'})], 0)
-        }, 1000)
+        }, 500)
 
     }
 

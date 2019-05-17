@@ -53,6 +53,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 //firebase
 import firebase from '../Firebase'
 var db = firebase.firestore()
+import { NavigationEvents } from 'react-navigation';
 
 
 type Props = {};
@@ -70,16 +71,73 @@ export default class Home extends Component < Props > {
             isLoading: true,
             appState: AppState.currentState,
             isLoading: true,
+            Username:'',
+            Role:'',
+            superUser:false,
+            UserId:'',
         };
     }
 
-    componentDidMount() {
-
-        AppState.addEventListener('change', this.handleAppStateChange);
-
+    test=()=>{
+      
         setTimeout(()=>{
             this.getAllCompanies()
         },1000)
+       
+            }
+
+    checkUser=()=>{
+        firebase.auth().onAuthStateChanged((user)=> {
+            if (user) {
+//update state
+
+this.setState({
+    Email:user.email
+})
+                //get user datails
+
+
+        var ref=db.collection('users')
+        var userRef=ref.where("Email","==",user.email)
+        userRef.get().then(dataSnap=>{
+            dataSnap.forEach((doc)=>{
+                this.setState({
+                    Username:doc.data().Username,
+                    Role:doc.data().Role,
+                    UserId:doc.id
+                })
+
+                if(this.state.Role === '1'){
+                    this.setState({
+                        superUser:true
+                    })
+                }
+              // alert(this.state.Role)
+
+               
+            })
+        })
+    
+            } else {
+         
+            }
+          });
+
+        
+          
+    }
+
+
+
+
+    componentDidMount() {
+        setTimeout(()=>{
+            this.checkUser()
+        },500)
+      
+
+        AppState.addEventListener('change', this.handleAppStateChange);
+
       }
 
       handleAppStateChange = (nextAppState) => {
@@ -140,7 +198,11 @@ export default class Home extends Component < Props > {
 
             <FadeIn>
                 <StatusBar backgroundColor="purple" barStyle="light-content"/>
-
+                <NavigationEvents
+                  onWillFocus={
+                   this.test
+                  }
+                />
                 <View style={styles.container}>
                  
                    
@@ -171,7 +233,7 @@ export default class Home extends Component < Props > {
                         <TouchableOpacity 
                        
                         onPress={()=>this.props.navigation.navigate('ViewCompany',{
-                            compId:item.key
+                            compId:item.key,UserId:this.state.UserId,UserRole:this.state.Role
                         })}
                         >
                             <Text
@@ -194,7 +256,9 @@ export default class Home extends Component < Props > {
                  
                 </View>
 
-                <Fab
+             {
+                 this.state.superUser?
+                 <Fab
                         active={this.state.active}
                         direction="up"
                         containerStyle={{}}
@@ -206,6 +270,9 @@ export default class Home extends Component < Props > {
                       <Image style={{height:30,width:30}} source={require('../../android/assets/images/plus-white.png')}></Image>
 
                     </Fab>
+                 
+                 :null
+             }
             </FadeIn>
 
         );
