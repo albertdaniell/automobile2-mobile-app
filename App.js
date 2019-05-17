@@ -24,6 +24,7 @@ import AddCompany from './components/Stack2/AddCompany'
 import ViewCompany from './components/Stack2/ViewCompany'
 import Account from './components/Tabs/Account'
 import AutomationDetails from './components/Stack2/AutomationDetails'
+import Create from './components/Stack1/Create'
 
 
 
@@ -58,6 +59,12 @@ const AppNavigator1 = createStackNavigator({
     },
     LoginScreen: {
         screen: Login,
+        navigationOptions: {
+            header: null
+        }
+    },
+    CreateScreen: {
+        screen: Create,
         navigationOptions: {
             header: null
         }

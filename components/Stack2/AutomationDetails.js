@@ -218,7 +218,7 @@ export default class Home extends Component < Props > {
                             
              
 <Text style={styles.label}>Which one?</Text>
-         <TextInput onChangeText={(softwareName)=>this.setState({softwareName})} value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of the software'></TextInput>
+         <TextInput onChangeText={(softwareName)=>this.setState({softwareName})} value={this.state.softwareName}  style={styles.myInput} placeholder='Enter name of the software'></TextInput>
          <Text style={styles.label}>For how long has the company been using the software?</Text>
          <Item picker>
               <Picker
@@ -232,7 +232,8 @@ export default class Home extends Component < Props > {
                 selectedValue={this.state.period}
                 onValueChange={this.onValueChange3.bind(this)}
               >
-              <Picker.Item label="1 month" value="1m"/>
+                <Picker.Item label="Choose" value=""/>
+                <Picker.Item label="1 month" value="1 month"/>
                 <Picker.Item label="1-5 years" value="1-5y"/>
                 <Picker.Item label="6-10 years" value="6-10y"/>
                 <Picker.Item label="Over years" value="over10"/>
@@ -244,7 +245,7 @@ export default class Home extends Component < Props > {
             </Item>
 
             <Text style={styles.label}>How frequent do you update your software?</Text>
-            <TextInput onChangeText={(updatePeriod)=>this.setState({updatePeriod})}  onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput}></TextInput>
+            <TextInput onChangeText={(updatePeriod)=>this.setState({updatePeriod})}  style={styles.myInput}></TextInput>
 
 
             <Text style={styles.label}>Are there areas where you need improvement in the software?</Text>

@@ -13,29 +13,69 @@ import {
     Text,
     View,
     ImageBackground,
-    StatusBar
+    StatusBar,YellowBox
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 import FadeIn from '../anime/FadeIn'
+//firebase
+import firebase from '../Firebase'
+var db=firebase.firestore()
 
 // Import Navigation
 
 type Props = {};
 export default class Splash extends Component < Props > {
 
-    loadGetStarted = async() => {
+    constructor(props){
+        
+        
+        super(props)
+        YellowBox.ignoreWarnings(['Setting a timer']);
+        YellowBox.ignoreWarnings(['Failed prop type']);
+        YellowBox.ignoreWarnings(["Can't perform a React state update on an unmounted component"]);
+
+
+
+        this.state={}
+    }
+
+    loadGetStarted=()=>{
 
         setTimeout(() => {
             this
                 .props
                 .navigation
                 .reset([NavigationActions.navigate({routeName: 'GetStarted'})], 0)
-        }, 40)
+        }, 1000)
+
+    }
+
+    checkUser=()=>{
+        firebase.auth().onAuthStateChanged((user)=> {
+            if (user) {
+           this.loadHomePage()
+            } else {
+             this.loadGetStarted()
+            }
+          });
+          
+    }
+
+ 
+
+    loadHomePage=()=> {
+
+        setTimeout(() => {
+            this
+                .props
+                .navigation
+                .reset([NavigationActions.navigate({routeName: 'Home1'})], 0)
+        }, 1000)
 
     }
 
     componentDidMount() {
-        this.loadGetStarted()
+        this.checkUser()
     }
     render() {
         return (

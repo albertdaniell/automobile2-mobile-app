@@ -29,12 +29,30 @@ import {
 import {NavigationActions} from 'react-navigation';
 
 import {Icon} from 'react-native-elements'
+//firebase
+import firebase from '../Firebase'
+var db=firebase.firestore()
+
 
 type Props = {};
 export default class Splash extends Component < Props > {
     constructor(props) {
         super(props)
-        this.state = {};
+        this.state = {
+
+            Email:'',
+            Password:''
+        };
+    }
+    logInFn=()=>{
+        //alert(0)
+var ref=db.collection('users')
+firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
+.then(()=>{
+    this.loadHomePage()
+}).catch(error=>{
+    alert(error.message)
+})
     }
 
     loadHomePage = async() => {
@@ -82,6 +100,8 @@ export default class Splash extends Component < Props > {
 
          
             <Input
+            value={this.state.Email}
+            onChangeText={(Email)=>this.setState({Email})}
                         autoFocus={true}
                             placeholder='Email'
                             keyboardType='email-address'
@@ -90,7 +110,7 @@ export default class Splash extends Component < Props > {
 
           <Item style={{borderBottomColor:'transparent',borderBottomColor:'white',borderBottomWidth:0}}>
           <Image style={{height:30,width:25,padding:5}} source={require('../../android/assets/images/key.png')}></Image>
-          <Input onSubmitEditing={this.loadHomePage}
+          <Input onChangeText={(Password)=>this.setState({Password})}  onSubmitEditing={this.logInFn}
                             placeholder='Password'
                             secureTextEntry={true}
                             style={styles.myInput}/>
@@ -110,7 +130,7 @@ export default class Splash extends Component < Props > {
                         }}
                             source={require('../../android/assets/images/bg.png')}>
                             <TouchableOpacity
-                                onPress={this.loadHomePage}
+                                onPress={this.logInFn}
                                 style={{
                                 width: '100%',
                                 alignItems: 'center',
@@ -129,6 +149,7 @@ export default class Splash extends Component < Props > {
                     </View>
 
                     <TouchableOpacity
+                    onPress={()=>this.props.navigation.navigate('CreateScreen')}
                         style={{
                         alignItems: 'center',
                         width: '100%',
