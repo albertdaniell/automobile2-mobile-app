@@ -38,7 +38,7 @@ import {
     List,
     ListItem
 } from 'native-base';
-
+import { NavigationEvents } from 'react-navigation';
 //firebase
 import firebase from '../Firebase'
 var db = firebase.firestore()
@@ -60,6 +60,9 @@ export default class ViewCompany extends Component < Props > {
             vehicles: [],
             automationData: false,
             isLoading: true,
+            companyDataExists:false,
+            softwareExists:null,
+            softwareName:''
         };
     }
     loadGetStarted = async() => {
@@ -131,7 +134,15 @@ export default class ViewCompany extends Component < Props > {
 
     }
 
+    test=()=>{
+setTimeout(()=>{
+    this.getCompanyDetails()
+    this.getAutomobile() 
+},10)
+    }
+
     getCompanyDetails = () => {
+        //alert(0)
 
         var compId = this.state.compId
         var ref = db.collection('companies')
@@ -155,6 +166,9 @@ export default class ViewCompany extends Component < Props > {
                             .data()
                             .dateOfVisit
                     })
+
+                 
+
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
@@ -167,7 +181,45 @@ export default class ViewCompany extends Component < Props > {
 
     }
 
+    getAutomobile=()=>{
+           //get automation sware details
+
+           var autoref=db.collection('softwares').where("companyId","==",this.state.compId)
+           autoref.get().then(autoSnap=>{
+               autoSnap.forEach((autodoc) => {
+                   //alert(autodoc.data().softwareExists)
+                   this.setState({
+                       softwareExists:autodoc.data().softwareExists,
+                       softwareName:autodoc.data().swareName
+
+
+                   })
+
+               })
+               if(autoSnap.size >=1){
+                   this.setState({
+                       companyDataExists:true
+                   })
+
+                
+
+               }
+
+
+               else{
+               this.setState({
+                   companyDataExists:false
+               })
+               }
+             
+
+           }).catch(error=>{
+               console.log('error occured')
+           })
+    }
+
     componentDidMount() {
+        
 
         const compId = this
             .props
@@ -175,18 +227,29 @@ export default class ViewCompany extends Component < Props > {
             .getParam('compId', 'NO-ID');
 
         this.setState({compId: compId})
-
+        setTimeout(()=>{
+            this.getAutomobile() 
+        },1000)
         setTimeout(() => {
             this.getCompanyDetails()
             this.getCompanyVehicles()
             this.getAutomationData()
+            
+          
         }, 1000)
+
+        
     }
     render() {
         return (
 
             <FadeIn>
                 <StatusBar backgroundColor="purple" barStyle="light-content"/>
+                <NavigationEvents
+                  onWillFocus={
+                   this.test
+                  }
+                />
 {
     this.state.isLoading?
     <View style={styles.loadingdiv}>
@@ -298,8 +361,13 @@ export default class ViewCompany extends Component < Props > {
                                             }}>
                                                
                                             </View>
-                                            <TouchableOpacity
-                                            onPress={()=>this.props.navigation.navigate('AutomationDetails')}
+                                           {
+                                               this.state.companyDataExists?<View>
+                                                   <Text>Software exits {this.state.softwareExists}</Text>
+                                                   <Text>Software name {this.state.softwareName}</Text>
+                                                   </View>:
+                                               <TouchableOpacity
+                                            onPress={()=>this.props.navigation.navigate('AutomationDetails',{compId:this.state.compId, compName:this.state.compName})}
                                                 style={{
                                                 alignItems: 'center',
                                                 marginTop: 10,
@@ -309,6 +377,7 @@ export default class ViewCompany extends Component < Props > {
                                             }}>
                                                 <Text>Add data</Text>
                                             </TouchableOpacity>
+                                           }
                                         </View>
 }
                                 </View>
@@ -318,11 +387,10 @@ export default class ViewCompany extends Component < Props > {
 
                         </View>
                     }
-                    </ImageBackground>
+                    {
+    this.state.companyDataExists?
 
-                </View>
-
-                <Fab
+    <Fab
                         active={this.state.active}
                         direction="up"
                         containerStyle={{}}
@@ -333,7 +401,12 @@ export default class ViewCompany extends Component < Props > {
                        >
                       <Image style={{height:30,width:30}} source={require('../../android/assets/images/edit.png')}></Image>
 
-                    </Fab>
+                    </Fab>:null
+}
+                    </ImageBackground>
+
+                </View>
+
             </FadeIn>
 
         );

@@ -283,7 +283,7 @@ const newItem= this.state.vehicleInput
 
                            <Grid>
           <Col style={{ width:'80%',marginTop:10 }}>
-          <TextInput  onChangeText={(vehicleInput)=>this.setState({vehicleInput})} autoFocus={true} style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
+          <TextInput  onSubmitEditing={this.addVehicle}  onChangeText={(vehicleInput)=>this.setState({vehicleInput})} autoFocus={true} style={styles.myInput} placeholder='Enter the vehicle category'></TextInput>
 
 
           </Col>

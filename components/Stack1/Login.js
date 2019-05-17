@@ -90,7 +90,7 @@ export default class Splash extends Component < Props > {
 
           <Item style={{borderBottomColor:'transparent',borderBottomColor:'white',borderBottomWidth:0}}>
           <Image style={{height:30,width:25,padding:5}} source={require('../../android/assets/images/key.png')}></Image>
-          <Input
+          <Input onSubmitEditing={this.loadHomePage}
                             placeholder='Password'
                             secureTextEntry={true}
                             style={styles.myInput}/>

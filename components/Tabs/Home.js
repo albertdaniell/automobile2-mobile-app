@@ -169,6 +169,7 @@ export default class Home extends Component < Props > {
                     </Left>
                     <Body>
                         <TouchableOpacity 
+                       
                         onPress={()=>this.props.navigation.navigate('ViewCompany',{
                             compId:item.key
                         })}

@@ -32,7 +32,7 @@ import {
     Fab,
     Button,
     Icon,
-    DatePicker,Grid,Col,Badge
+    DatePicker,Grid,Col,Badge,Picker, Textarea
 } from 'native-base';
 var todayDate = new Date()
     .toString()
@@ -60,16 +60,114 @@ export default class Home extends Component < Props > {
             vehicles:[],
             vehicleInput:'',
             companyName:'',
+            q1: 'Yes',
+            softwareExists:true,
+            period:'',
+            compId:'',
+            compName:'',
+            softwareName:'',
+            updatePeriod:'',
+            improvementAreas:'',
+            areasAutomated:''
+
          
 
             
         };
     }
 
+    submitForm=()=>{
+        var ref=db.collection('softwares');
+        ref.add({
+            softwareExists:this.state.softwareExists,
+            swareName:this.state.softwareName,
+            period_of_use:this.state.period,
+            updatePeriod:this.state.updatePeriod,
+            improvementAreas:this.state.improvementAreas,
+            areasAutomated:this.state.areasAutomated,
+            date:'',
+            userId:'',
+            delete_status:false,
+            approved_status:true,
+            companyId:this.state.compId
+
+
+        }).then(()=>{
+            this.props.navigation.navigate('ViewCompany',{compId:this.state})
+
+           // alert("Updated success")
+        }).catch(error=>{
+            alert(error)
+        })
+    }
+    onValueChange3(value: string) {
+        this.setState({
+          period: value,
+          
+        });
+
+    }
+
+
+    onValueChange2(value: string) {
+        this.setState({
+          q1: value,
+          
+        });
+     // alert(this.state.q1)
+
+        if(this.state.q1 == 'Yes'){
+       setTimeout(()=>{
+        this.setState({
+            softwareExists:false
+        })
+       },10)
+        }
+
+        else if(this.state.q1 =='No'){
+            setTimeout(()=>{
+                this.setState({
+                    softwareExists:true
+                })
+               },10)
+
+        }
+
+        else{
+         
+        }
+      }
    
     componentDidMount() {
+        const compId = this
+        .props
+        .navigation
+        .getParam('compId', 'NO-ID');
 
-   
+        const compName = this
+        .props
+        .navigation
+        .getParam('compName', 'NO-Company name');
+
+    this.setState({compId: compId,compName:compName})
+     setTimeout(()=>{
+        if(this.state.q1 == 'Yes'){
+            this.setState({
+                softwareExists:true
+            })
+            }
+    
+            else if(this.state.q1 =='No'){
+                this.setState({
+                    softwareExists:false
+                })
+    
+            }
+    
+            else{
+    
+            }
+     },1000)
    
     }
 
@@ -90,53 +188,112 @@ export default class Home extends Component < Props > {
                     <View style={styles.container}>
                         
                     <KeyboardAvoidingView behavior='padding' enabled>
-                    <Text style={styles.instructions}>Fill in the following data entry form</Text>
+                    <Text style={styles.instructions}>Fill in the following data entry form for {this.state.compName}</Text>
+                   <View style={styles.yesDiv}>
+                       
+                   <Text style={styles.label}>Does the company have automation application sofware for motor vehicle assembly line?</Text>
+                                <Item picker>
+              <Picker
+              style={styles.myInput}
+                mode="dropdown"
+                iosIcon={<Icon name="arrow-down" />}
+               
+                placeholder="Select"
+                placeholderStyle={{ color: "#bfc6ea" }}
+                placeholderIconColor="#007aff"
+                selectedValue={this.state.q1}
+                onValueChange={this.onValueChange2.bind(this)}
+              >
+              <Picker.Item label="No" value="No"/>
+                <Picker.Item label="Yes" value="Yes"/>
+                
+              </Picker>
+            </Item>
+                        
+                       </View>   
 
-                            <View style={styles.yesDiv}>
+                            {this.state.softwareExists?
+                                <View  style={styles.yesDiv}>
 
-                                <Text style={styles.label}>Does the company have automation application sofware for motor vehicle assembly line?</Text>
-                                <TextInput value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of company'></TextInput>
-
+                            
              
-                       <Text style={styles.label}>Which one?</Text>
-                                <TextInput value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of company'></TextInput>
-                                <Text style={styles.label}>For how long has the company been using the software?</Text>
-                                <TextInput value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of company'></TextInput>
-
-                  
-                             
-
-    <ImageBackground
-                                    imageStyle={{
-                                    borderRadius: 50
-                                }}
-                                    style={{
-                                    padding: 10,
-                                    borderRadius: 20,
-                                    marginTop: 20
-                                }}
-                                    source={require('../../android/assets/images/bg.png')}>
-                                    <TouchableOpacity
-                                onPress={this.submitFn1}
-                                        style={{
-                                        width: '100%',
-                                        alignItems: 'center',
-                                        borderRadius: 10
-                                    }}>
-                                        <Text
-                                            style={{
-                                            color: '#fff',
-                                            letterSpacing: 10,
-                                            textTransform: 'uppercase',
-                                            padding: 10
-                                        }}>Next</Text>
-
-                                    </TouchableOpacity>
-                                </ImageBackground>
+<Text style={styles.label}>Which one?</Text>
+         <TextInput onChangeText={(softwareName)=>this.setState({softwareName})} value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of the software'></TextInput>
+         <Text style={styles.label}>For how long has the company been using the software?</Text>
+         <Item picker>
+              <Picker
+              style={styles.myInput}
+                mode="dropdown"
+                iosIcon={<Icon name="arrow-down" />}
+               
+                placeholder="Select"
+                placeholderStyle={{ color: "#bfc6ea" }}
+                placeholderIconColor="#007aff"
+                selectedValue={this.state.period}
+                onValueChange={this.onValueChange3.bind(this)}
+              >
+              <Picker.Item label="1 month" value="1m"/>
+                <Picker.Item label="1-5 years" value="1-5y"/>
+                <Picker.Item label="6-10 years" value="6-10y"/>
+                <Picker.Item label="Over years" value="over10"/>
 
 
-                               
-                            </View>
+                
+
+              </Picker>
+            </Item>
+
+            <Text style={styles.label}>How frequent do you update your software?</Text>
+            <TextInput onChangeText={(updatePeriod)=>this.setState({updatePeriod})}  onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput}></TextInput>
+
+
+            <Text style={styles.label}>Are there areas where you need improvement in the software?</Text>
+
+            <Textarea onChangeText={(improvementAreas)=>this.setState({improvementAreas})}  style={styles.myInput2} rowSpan={5} bordered placeholder="..." />
+            <Text style={styles.label}>Apart from automation motor vehicles assemply line, whuch other areas within your organization need to be automated?</Text>
+
+<Textarea onChangeText={(areasAutomated)=>this.setState({areasAutomated})}  style={styles.myInput2} rowSpan={5} bordered placeholder="..." />
+
+<ImageBackground
+             imageStyle={{
+             borderRadius: 50
+         }}
+             style={{
+             padding: 10,
+             borderRadius: 20,
+             marginTop: 20
+         }}
+             source={require('../../android/assets/images/bg.png')}>
+             <TouchableOpacity
+         onPress={this.submitForm}
+                 style={{
+                 width: '100%',
+                 alignItems: 'center',
+                 borderRadius: 10
+             }}>
+                 <Text
+                     style={{
+                     color: '#fff',
+                     letterSpacing: 10,
+                     textTransform: 'uppercase',
+                     padding: 10
+                 }}>Submit form</Text>
+
+             </TouchableOpacity>
+         </ImageBackground>
+
+
+        
+     </View>
+                            :
+                                <View style={styles.noDiv}>
+
+<Text>No</Text>
+</View>
+
+                            }
+
+                          
                         </KeyboardAvoidingView>
                 
                    
@@ -179,6 +336,15 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
         backgroundColor: '#fff'
+    },    myInput2: {
+        
+        marginTop: 10,
+        marginBottom: 10,
+   
+        padding: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        backgroundColor: '#fff'
     },
     label: {
         padding: 10,
@@ -209,6 +375,10 @@ const styles = StyleSheet.create({
     },
     yesDiv:{
 backgroundColor:'#e0e0e0',
-padding:10
-    }
+padding:5
+    },
+    noDiv:{
+        backgroundColor:'#e0e0e0',
+        padding:10
+            }
 });
