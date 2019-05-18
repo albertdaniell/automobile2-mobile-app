@@ -35,7 +35,7 @@ import {
     Left,
     Right,
     Body,
-    Icon,
+   
 Fab,
     Tabs,
     Tab,
@@ -47,6 +47,7 @@ Fab,
 Col
 } from 'native-base';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 // Import Navigation
 
@@ -267,7 +268,7 @@ this.setState({
                     }}
                         position="bottomRight"
                         onPress={()=>this.props.navigation.navigate('AddCompany')}>
-                      <Image style={{height:30,width:30}} source={require('../../android/assets/images/plus-white.png')}></Image>
+                        <Icon name='ios-add' size={40} color="purple"></Icon>
 
                     </Fab>
                  

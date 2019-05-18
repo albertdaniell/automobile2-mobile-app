@@ -27,15 +27,15 @@ import {
 } from 'native-base';
 // Import Navigation
 import {NavigationActions} from 'react-navigation';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import {Icon} from 'react-native-elements'
 //firebase
 import firebase from '../Firebase'
 var db=firebase.firestore()
 
 
 type Props = {};
-export default class Splash extends Component < Props > {
+export default class Login extends Component < Props > {
     constructor(props) {
         super(props)
         YellowBox.ignoreWarnings(['Setting a timer']);
@@ -119,9 +119,8 @@ firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
                     <View style={styles.loginView}>
 
                     <Item style={{borderBottomColor:'transparent',borderBottomColor:'white',borderBottomWidth:0}}>
-
-                    <Image style={{height:20,width:30,padding:5}} source={require('../../android/assets/images/envelope.png')}></Image>
-
+               <Icon name='ios-mail' size={25} color='purple'></Icon>
+              
          
             <Input
             value={this.state.Email}
@@ -133,7 +132,7 @@ firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
           </Item>
 
           <Item style={{borderBottomColor:'transparent',borderBottomColor:'white',borderBottomWidth:0}}>
-          <Image style={{height:30,width:25,padding:5}} source={require('../../android/assets/images/key.png')}></Image>
+          <Icon name='ios-unlock' size={25} color="purple"></Icon>
           <Input onChangeText={(Password)=>this.setState({Password})}  onSubmitEditing={this.logInFn}
                             placeholder='Password'
                             secureTextEntry={true}

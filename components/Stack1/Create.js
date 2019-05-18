@@ -28,8 +28,8 @@ import {
 } from 'native-base';
 // Import Navigation
 import {NavigationActions} from 'react-navigation';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import {Icon} from 'react-native-elements'
 
 //firebase
 import firebase from '../Firebase'
@@ -144,13 +144,8 @@ export default class Splash extends Component < Props > {
     borderBottomWidth: 0
 }}>
 
-    <Image
-        style={{
-        height: 30,
-        width: 30,
-        padding: 5
-    }}
-        source={require('../../android/assets/images/user.png')}></Image>
+<Icon name='ios-contact' size={30} color='purple'></Icon>
+
 
     <Input value={this.state.Username} onChangeText={(Username)=>this.setState({Username})} placeholder='Username' keyboardType='default' style={styles.myInput}/>
 </Item>
@@ -162,13 +157,8 @@ export default class Splash extends Component < Props > {
     borderBottomWidth: 0
 }}>
 
-    <Image
-        style={{
-        height: 20,
-        width: 30,
-        padding: 5
-    }}
-        source={require('../../android/assets/images/envelope.png')}></Image>
+<Icon name='ios-mail' size={30} color='purple'></Icon>
+
 
     <Input value={this.state.Email} onChangeText={(Email)=>this.setState({Email})} placeholder='Email' keyboardType='email-address' style={styles.myInput}/>
 </Item>
@@ -179,13 +169,7 @@ export default class Splash extends Component < Props > {
     borderBottomColor: 'white',
     borderBottomWidth: 0
 }}>
-    <Image
-        style={{
-        height: 30,
-        width: 25,
-        padding: 5
-    }}
-        source={require('../../android/assets/images/key.png')}></Image>
+<Icon name='ios-lock' size={30} color='purple'></Icon>
     <Input
     value={this.state.Password}
        onChangeText={(Password)=>this.setState({Password})}
@@ -200,13 +184,8 @@ export default class Splash extends Component < Props > {
     borderBottomColor: 'white',
     borderBottomWidth: 0
 }}>
-    <Image
-        style={{
-        height: 30,
-        width: 25,
-        padding: 5
-    }}
-        source={require('../../android/assets/images/key.png')}></Image>
+<Icon name='ios-lock' size={30} color='purple'></Icon>
+
     <Input
     value={this.state.Cpassword}
     onChangeText={(Cpassword)=>this.setState({Cpassword})}

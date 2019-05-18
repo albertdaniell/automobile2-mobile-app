@@ -11,15 +11,11 @@ import {Platform, StyleSheet, Text, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {createStackNavigator, createAppContainer, createBottomTabNavigator} from 'react-navigation'
 //Import components
-
 import Splash from './components/Stack1/Splash'
 import GetStarted from './components/GetStarted'
 import Login from './components/Stack1/Login'
-
 import HomeScreen1 from './components/Tabs/Home1'
 import HomeScreen from './components/Tabs/Home'
-
-
 import AddCompany from './components/Stack2/AddCompany'
 import ViewCompany from './components/Stack2/ViewCompany'
 import Account from './components/Tabs/Account'
@@ -49,12 +45,12 @@ const TabNavigator = createBottomTabNavigator({
         let IconComponent = Ionicons;
         let iconName;
         if (routeName === 'Home') {
-          iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+          iconName = `ios-home${focused ? '' : '-outline'}`;
           // Sometimes we want to add badges to some icons. 
           // You can check the implementation below.
           IconComponent = HomeIconWithBadge; 
         } else if (routeName === 'Account') {
-          iconName = `ios-options`;
+          iconName = `ios-contact`;
         }
 
         // You can return any component that you like here!
@@ -62,8 +58,8 @@ const TabNavigator = createBottomTabNavigator({
       },
     }),
     tabBarOptions: {
-      activeTintColor: 'tomato',
-      inactiveTintColor: 'gray',
+      activeTintColor: 'purple',
+      inactiveTintColor: '#ccc',
     },
   });
   const HomeIconWithBadge = (props) => {

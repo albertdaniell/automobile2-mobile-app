@@ -30,7 +30,7 @@ import {
     Input,
     Fab,
     Button,
-    Icon,
+   
     DatePicker,
     Grid,
     Col,
@@ -42,6 +42,7 @@ import { NavigationEvents } from 'react-navigation';
 //firebase
 import firebase from '../Firebase'
 var db = firebase.firestore()
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type Props = {};
 export default class ViewCompany extends Component < Props > {
@@ -318,25 +319,48 @@ setTimeout(()=>{
                                 padding: 0
                             }}>
                                 <ListItem style={styles.myList}>
-                                    <Text
+                                <Item style={{borderBottomWidth:0}}>
+                                 <Icon name='ios-briefcase' size={30} color="white"></Icon>
+
+                                 <Text
                                         style={{
                                         color: '#fff',
-                                        fontSize: 20
+                                        fontSize: 20,
+                                        marginLeft:10
                                     }}>Company Name: {this.state.compName}</Text>
+                                 </Item>
+                                    
                                 </ListItem>
                                 <ListItem style={styles.myList}>
-                                    <Text
+                                <Item style={{borderBottomWidth:0}}>
+                                 <Icon name='ios-navigate' size={30} color="white"></Icon>
+
+                                 <Text
                                         style={{
                                         color: '#fff',
-                                        fontSize: 15
+                                        fontSize: 15,
+                                        marginLeft:10
                                     }}>Company Location: {this.state.compLocation}</Text>
+                                 </Item>
+
+
+
+                                   
                                 </ListItem>
                                 <ListItem style={styles.myList}>
-                                    <Text
+
+
+                                <Item style={{borderBottomWidth:0}}>
+                                 <Icon name='ios-calendar' size={30} color="white"></Icon>
+
+                                 <Text
                                         style={{
                                         color: '#fff',
-                                        fontSize: 15
+                                        fontSize: 15,
+                                        marginLeft:10
                                     }}>Date of Visit: {this.state.dateOfVisit}</Text>
+                                 </Item>
+                                  
                                 </ListItem>
                             </List>
                         </View>
@@ -347,11 +371,15 @@ setTimeout(()=>{
                                     style={{
                                     padding: 10
                                 }}>
-                                    <Text
+                                 <Item>
+                                 <Icon name='ios-car' size={40} color="purple"></Icon>
+
+                                 <Text
                                         style={{
                                         fontWeight: 'bold',
-                                        textDecorationLine: 'underline'
+                                        marginLeft:10
                                     }}>Vehicle Categories</Text>
+                                 </Item>
                                     <View
                                         style={{
                                         flexWrap: 'wrap',
@@ -378,11 +406,15 @@ setTimeout(()=>{
                                     style={{
                                     padding: 10
                                 }}>
-                                    <Text
+                                <Item>
+                                 <Icon name='ios-list' size={40} color="purple"></Icon>
+
+                                 <Text
                                         style={{
                                         fontWeight: 'bold',
-                                        textDecorationLine: 'underline'
-                                    }}>Automation software data</Text>
+                                        marginLeft:10
+                                    }}>Automation details</Text>
+                                 </Item>
 
                                     {this.state.automationData
                                         ? null
@@ -439,7 +471,7 @@ setTimeout(()=>{
                     }}
                         position="bottomRight"
                        >
-                      <Image style={{height:30,width:30}} source={require('../../android/assets/images/edit.png')}></Image>
+                       <Icon name='ios-create' size={30} color="white"></Icon>
 
                     </Fab>
     :null
