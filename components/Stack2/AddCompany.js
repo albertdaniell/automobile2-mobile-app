@@ -69,7 +69,9 @@ export default class Home extends Component < Props > {
             Approved:true,
             delete_status:false,
             showSubmitBtn:true,
-            showFinishBtn:true
+            showFinishBtn:true,
+            longi:'',
+            lati:''
 
             
         };
@@ -83,7 +85,18 @@ export default class Home extends Component < Props > {
     componentDidMount() {
 
         this.setState({chosenDate: todayDate,dateOfEntry:todayDate})
+        this.getGeo()
    
+    }
+
+    getGeo=()=>{
+        navigator
+        .geolocation
+        .getCurrentPosition(position => {
+            this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
+        })
+
+      
     }
 
     submitFn1=async()=>{
@@ -128,7 +141,9 @@ export default class Home extends Component < Props > {
                 userId:this.state.userId,
                 Userame:this.state.Username,
                 Approved:this.state.Approved,
-                delete_status:this.state.delete_status
+                delete_status:this.state.delete_status,
+                longitude:this.state.longi,
+                latitude:this.state.lati
     
             }).then((docRef)=>{
                // alert("Success!")
@@ -341,9 +356,11 @@ const newItem= this.state.vehicleInput
                                 <TextInput value={this.state.companyName} onChangeText={(companyName)=>this.setState({companyName})}  style={styles.myInput} placeholder='Enter name of company'></TextInput>
                                 <Text style={styles.label}>Company location</Text>
                                 <TextInput value={this.state.companyLocation} onChangeText={(companyLocation)=>this.setState({companyLocation})} style={styles.myInput} placeholder='Enter location of company'></TextInput>
-                                <Text style={styles.label}>Geo-coorinates</Text>
+                                <Text style={styles.label}>Geo-coorinates (auto-generated )</Text>
 
-                                <TextInput style={styles.myInput} placeholder='Company Name'></TextInput>
+                              
+                                    <Text style={styles.myInput}>{this.state.longi}, {this.state.lati}</Text>
+                                   
                                 <Text style={styles.label}>Date of visit</Text>
                                 <View style={styles.myInput}>
                                     <DatePicker

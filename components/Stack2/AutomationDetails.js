@@ -77,6 +77,11 @@ export default class Home extends Component < Props > {
     }
 
     submitForm=()=>{
+        if(this.state.softwareName == '' || this.state.period == ''){
+            alert("Fields cannot be empty!")
+
+            return 0;
+        }
         var ref=db.collection('softwares');
         ref.add({
             softwareExists:this.state.softwareExists,
