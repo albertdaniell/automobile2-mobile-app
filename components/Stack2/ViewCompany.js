@@ -69,6 +69,11 @@ export default class ViewCompany extends Component < Props > {
             EntryBy:'',
             UserRole:'',
             superUser:false,
+            period_of_use:'',
+            updatePeriod:'',
+            improvementAreas:'',
+            areasAutomated:'',
+            approved_status:''
         };
     }
     loadGetStarted = async() => {
@@ -173,9 +178,10 @@ setTimeout(()=>{
                             .dateOfVisit,
                             EntryBy:doc
                             .data()
-                            .userId
+                            .userId,
+                       
                     })
-                  // alert(this.state.EntryBy)
+                 // alert(this.state.EntryBy)
 
                     // if(this.state.EntryBy === this.state.UserId){
                     //     // this.setState({
@@ -211,7 +217,19 @@ setTimeout(()=>{
                    //alert(autodoc.data().softwareExists)
                    this.setState({
                        softwareExists:autodoc.data().softwareExists,
-                       softwareName:autodoc.data().swareName
+                       softwareName:autodoc.data().swareName,
+                       period_of_use:autodoc
+                       .data()
+                       .period_of_use,
+                       updatePeriod:autodoc
+                       .data()
+                       .updatePeriod,
+                       approved_status:autodoc
+                       .data()
+                       .approved_status,
+                       improvementAreas:autodoc
+                       .data()
+                       .improvementAreas
 
 
                    })
@@ -480,8 +498,51 @@ setTimeout(()=>{
                                                this.state.companyDataExists?
                                                
                                                <View>
-                                                   <Text>Software exits {this.state.softwareExists}</Text>
-                                                   <Text>Software name {this.state.softwareName}</Text>
+                                                   <List>
+                                                   <ListItem itemDivider>
+                                                      
+
+                                                       </ListItem>
+                                                       <ListItem>
+                                                       <Text>Software exits {this.state.softwareExists}</Text>
+
+                                                       </ListItem>
+                                                       <ListItem itemDivider>
+                                                      <Text>Name of software</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text>{this.state.softwareName}</Text>
+
+                                                       </ListItem>
+                                                       <ListItem itemDivider>
+                                                      <Text>Period of use</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text>{this.state.period_of_use}</Text>
+
+                                                       </ListItem>
+
+                                                       <ListItem itemDivider>
+                                                      <Text>Period it takes to update</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text> {this.state.updatePeriod}</Text>
+
+                                                       </ListItem>
+
+                                                       <ListItem itemDivider>
+                                                      <Text>Areas of improvement</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text>{this.state.improvementAreas}</Text>
+
+                                                       </ListItem>
+
+                                                   </List>
                                                    </View>:
                                              this.state.superUser?
                                              <TouchableOpacity
@@ -496,11 +557,7 @@ setTimeout(()=>{
                                                 <Text>Add data</Text>
                                             </TouchableOpacity>:<Text>No data available</Text>
                                            }
-                                          <Text>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic repudiandae debitis unde harum quod labore voluptatem totam modi veritatis perspiciatis culpa aliquam blanditiis, earum quidem vitae, assumenda rem. Aperiam, adipisci. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque soluta accusantium voluptatum. Accusamus minima, autem perferendis dolorum culpa quia harum quo voluptatem possimus veniam ipsum illum maiores aliquam, cupiditate doloribus.</Text> 
-                                          <Text>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic repudiandae debitis unde harum quod labore voluptatem totam modi veritatis perspiciatis culpa aliquam blanditiis, earum quidem vitae, assumenda rem. Aperiam, adipisci. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque soluta accusantium voluptatum. Accusamus minima, autem perferendis dolorum culpa quia harum quo voluptatem possimus veniam ipsum illum maiores aliquam, cupiditate doloribus.</Text> 
-
-                                          <Text>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic repudiandae debitis unde harum quod labore voluptatem totam modi veritatis perspiciatis culpa aliquam blanditiis, earum quidem vitae, assumenda rem. Aperiam, adipisci. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque soluta accusantium voluptatum. Accusamus minima, autem perferendis dolorum culpa quia harum quo voluptatem possimus veniam ipsum illum maiores aliquam, cupiditate doloribus.</Text> 
-
+                                   
                                         </View>
 }
                                 </View>
