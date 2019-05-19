@@ -76,6 +76,7 @@ export default class Home extends Component < Props > {
             Role:'',
             superUser:false,
             UserId:'',
+            message:''
         };
     }
 
@@ -128,13 +129,27 @@ this.setState({
           
     }
 
+listen=()=>{
+    db.collection("user")
+    .onSnapshot((doc) =>{
+        alert("Current data...")
 
+        this.setState({
+            message:'A new user has been added to the system'
+        })
+        // console.log("Current data: ", doc.data());
+    });
+}
 
 
     componentDidMount() {
         setTimeout(()=>{
             this.checkUser()
         },500)
+      //  this.listen()
+
+      
+
       
 
         AppState.addEventListener('change', this.handleAppStateChange);
@@ -210,7 +225,8 @@ this.setState({
                      <Text 
                         style={{
                         fontSize: 30,
-                        padding: 10
+                        padding: 10,
+                        fontWeight:'bold'
                     }}>Explore</Text>
                <View style={{backgroundColor:'#ededed',margin:10,borderRadius:10,borderBottomWidth:0,borderBottomColor:'transparent'}}>
                <Item style={{borderBottomWidth:0}}>

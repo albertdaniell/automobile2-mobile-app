@@ -39,7 +39,9 @@ export default class Splash extends Component < Props > {
         this.state={
             Email:'',
             Role:'',
-            Username:''
+            Username:'',
+            lati:'',
+            longi:''
         }
     }
 
@@ -101,6 +103,18 @@ this.setState({
 
     componentDidMount() {
         this.checkUser()
+        this.getGeo()
+        
+    }
+
+    getGeo=()=>{
+        navigator
+        .geolocation
+        .getCurrentPosition(position => {
+            this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
+        })
+
+      
     }
     render() {
         return (

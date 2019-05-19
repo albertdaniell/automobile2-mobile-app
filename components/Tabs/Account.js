@@ -136,7 +136,9 @@ export default class Account extends Component < Props > {
             <Text>Account</Text>
           </Separator>
       
-          <TouchableOpacity style={styles.myTouch}>
+          <TouchableOpacity 
+          onPress={()=>this.props.navigation.navigate('Users')}
+          style={styles.myTouch}>
            <Text>Users</Text>
            </TouchableOpacity>
           <TouchableOpacity style={styles.myTouch}>

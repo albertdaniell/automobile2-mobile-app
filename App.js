@@ -22,6 +22,7 @@ import Account from './components/Tabs/Account'
 import AutomationDetails from './components/Stack2/AutomationDetails'
 import Create from './components/Stack1/Create'
 import IconWithBadge from './components/IconWithBadge'
+import Users from './components/Tabs/Users'
 
 
 const TabNavigator = createBottomTabNavigator({
@@ -45,7 +46,7 @@ const TabNavigator = createBottomTabNavigator({
         let IconComponent = Ionicons;
         let iconName;
         if (routeName === 'Home') {
-          iconName = `ios-home${focused ? '' : '-outline'}`;
+          iconName = `ios-home`;
           // Sometimes we want to add badges to some icons. 
           // You can check the implementation below.
           IconComponent = HomeIconWithBadge; 
@@ -113,6 +114,12 @@ const AppNavigator1 = createStackNavigator({
           screen:AutomationDetails,
           navigationOptions:{
             title:'Add Automation Details'
+          }
+      },
+      Users:{
+          screen:Users,
+          navigationOptions:{
+            title:'All Users'
           }
       }
 

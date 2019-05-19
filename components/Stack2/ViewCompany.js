@@ -18,7 +18,7 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     ScrollView,
-    ActivityIndicator,YellowBox,Image
+    ActivityIndicator,YellowBox,Image,Animated
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 import FadeIn from '../anime/FadeIn'
@@ -240,6 +240,30 @@ setTimeout(()=>{
     }
 
     componentDidMount() {
+
+        this.scrollY=new Animated.Value(0)
+
+        this.startHeaderHeight=100+StatusBar.currentHeight
+        this.endHeaderHeight=70+StatusBar.currentHeight
+
+        this.animatedHeaderHeight=this.scrollY.interpolate({
+            inputRange:[0,250],
+            outputRange:[this.startHeaderHeight,this.endHeaderHeight],
+            extrapolate:'clamp'
+        })
+
+        this.animatedOpacity=this.animatedHeaderHeight.interpolate({
+            inputRange:[this.endHeaderHeight,this.startHeaderHeight],
+            outputRange:[0,1],
+            extrapolate:'clamp'
+        })
+
+        this.animatedTagTop=this.animatedHeaderHeight.interpolate({
+            inputRange:[this.endHeaderHeight,this.startHeaderHeight],
+            outputRange:[-30,10],
+            extrapolate:'clamp'
+        })
+       
        
 
         const compId = this
@@ -267,27 +291,20 @@ setTimeout(()=>{
         this.setState({compId: compId,UserId:UserId,UserRole:UserRole})
         setTimeout(()=>{
             this.getAutomobile() 
-        },1000)
+        },100)
         setTimeout(() => {
             this.getCompanyDetails()
             this.getCompanyVehicles()
             this.getAutomationData()
             
           
-        }, 1000)
+        }, 100)
 
         
     }
     render() {
         return (
-
-            <FadeIn>
-                <StatusBar backgroundColor="purple" barStyle="light-content"/>
-                <NavigationEvents
-                  onWillFocus={
-                   this.test
-                  }
-                />
+<View style={{height:'100%'}}>
 {
     this.state.isLoading?
     <View style={styles.loadingdiv}>
@@ -298,6 +315,18 @@ setTimeout(()=>{
 
                 </View>:null
 }
+<ScrollView onScroll={Animated.event(
+                                [
+                                    {nativeEvent:{contentOffset:{y:this.scrollY}}}
+                                ]
+                            )}>
+                <StatusBar backgroundColor="purple" barStyle="light-content"/>
+                <NavigationEvents
+                  onWillFocus={
+                   this.test
+                  }
+                />
+
                 <View style={styles.container}>
                     <ImageBackground
                         style={{
@@ -318,7 +347,15 @@ setTimeout(()=>{
                                 marginLeft: 0,
                                 padding: 0
                             }}>
-                                <ListItem style={styles.myList}>
+                            
+                              
+                          
+
+                                <Animated.View style={{height:this.animatedHeaderHeight}}>
+                             
+
+<Animated.View style={{position:'relative',top:10,opacity:this.animatedOpacity}}>
+<ListItem style={styles.myList}>
                                 <Item style={{borderBottomWidth:0}}>
                                  <Icon name='ios-briefcase' size={30} color="white"></Icon>
 
@@ -331,7 +368,7 @@ setTimeout(()=>{
                                  </Item>
                                     
                                 </ListItem>
-                                <ListItem style={styles.myList}>
+<ListItem style={styles.myList}>
                                 <Item style={{borderBottomWidth:0}}>
                                  <Icon name='ios-navigate' size={30} color="white"></Icon>
 
@@ -345,28 +382,34 @@ setTimeout(()=>{
 
 
 
+
                                    
                                 </ListItem>
-                                <ListItem style={styles.myList}>
+<ListItem style={styles.myList}>
 
 
-                                <Item style={{borderBottomWidth:0}}>
-                                 <Icon name='ios-calendar' size={30} color="white"></Icon>
+<Item style={{borderBottomWidth:0}}>
+ <Icon name='ios-calendar' size={30} color="white"></Icon>
 
-                                 <Text
-                                        style={{
-                                        color: '#fff',
-                                        fontSize: 15,
-                                        marginLeft:10
-                                    }}>Date of Visit: {this.state.dateOfVisit}</Text>
-                                 </Item>
-                                  
-                                </ListItem>
+ <Text
+        style={{
+        color: '#fff',
+        fontSize: 15,
+        marginLeft:10
+    }}>Date of Visit: {this.state.dateOfVisit}</Text>
+ </Item>
+  
+</ListItem>
+</Animated.View>
+
+                                </Animated.View>
+
+                       
                             </List>
                         </View>
                         <View style={styles.div2}>
 
-                            <ScrollView>
+                            <ScrollView  >
                                 <View
                                     style={{
                                     padding: 10
@@ -382,22 +425,25 @@ setTimeout(()=>{
                                  </Item>
                                     <View
                                         style={{
-                                        flexWrap: 'wrap',
-                                        alignItems: 'flex-start',
+                                        
                                         flexDirection: 'row'
                                     }}>
+                                    <ScrollView showsHorizontalScrollIndicator={false} style={{}} horizontal={true}>
+
                                         {this
                                             .state
                                             .vehicles
                                             .map((vehicle) => {
                                                 return (
-                                                    <Text
+                                                   <Text
                                                         style={{
-                                                            flexDirection:'column',backgroundColor:'orange',marginRight:10,padding:5,borderRadius:4,marginBottom:3,marginTop:10
+                                                           borderWidth:1,borderColor:'orange',marginRight:20,padding:5,borderRadius:4,marginBottom:3,marginTop:10
                                                     }}>{vehicle}</Text>
+                                                
                                                 )
                                             })
 }
+</ScrollView>
                                     </View>
 
                                 </View>
@@ -450,6 +496,11 @@ setTimeout(()=>{
                                                 <Text>Add data</Text>
                                             </TouchableOpacity>:<Text>No data available</Text>
                                            }
+                                          <Text>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic repudiandae debitis unde harum quod labore voluptatem totam modi veritatis perspiciatis culpa aliquam blanditiis, earum quidem vitae, assumenda rem. Aperiam, adipisci. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque soluta accusantium voluptatum. Accusamus minima, autem perferendis dolorum culpa quia harum quo voluptatem possimus veniam ipsum illum maiores aliquam, cupiditate doloribus.</Text> 
+                                          <Text>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic repudiandae debitis unde harum quod labore voluptatem totam modi veritatis perspiciatis culpa aliquam blanditiis, earum quidem vitae, assumenda rem. Aperiam, adipisci. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque soluta accusantium voluptatum. Accusamus minima, autem perferendis dolorum culpa quia harum quo voluptatem possimus veniam ipsum illum maiores aliquam, cupiditate doloribus.</Text> 
+
+                                          <Text>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Hic repudiandae debitis unde harum quod labore voluptatem totam modi veritatis perspiciatis culpa aliquam blanditiis, earum quidem vitae, assumenda rem. Aperiam, adipisci. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque soluta accusantium voluptatum. Accusamus minima, autem perferendis dolorum culpa quia harum quo voluptatem possimus veniam ipsum illum maiores aliquam, cupiditate doloribus.</Text> 
+
                                         </View>
 }
                                 </View>
@@ -459,7 +510,13 @@ setTimeout(()=>{
 
                         </View>
                     }
-                    {
+               
+                    </ImageBackground>
+
+                </View>
+          
+            </ScrollView>
+            {
     this.state.companyDataExists?
     this.state.superUser?
     <Fab
@@ -478,11 +535,7 @@ setTimeout(()=>{
 
     :null
 }
-                    </ImageBackground>
-
-                </View>
-
-            </FadeIn>
+</View>
 
         );
     }
@@ -516,7 +569,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 10,
         height: '100%',
-        marginTop: 20
+        marginTop: 120
 
     },
     loadingdiv:{
