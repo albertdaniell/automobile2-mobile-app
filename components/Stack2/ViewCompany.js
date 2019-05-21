@@ -265,7 +265,7 @@ setTimeout(()=>{
         this.endHeaderHeight=70+StatusBar.currentHeight
 
         this.animatedHeaderHeight=this.scrollY.interpolate({
-            inputRange:[0,250],
+            inputRange:[0,230],
             outputRange:[this.startHeaderHeight,this.endHeaderHeight],
             extrapolate:'clamp'
         })

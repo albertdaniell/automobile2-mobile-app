@@ -76,6 +76,10 @@ export default class Home extends Component < Props > {
             Role:'',
             superUser:false,
             UserId:'',
+            message:'',
+            isSearching:false,
+            companies2:[],
+            searchCompQuery:'',
             message:''
         };
     }
@@ -127,6 +131,58 @@ this.setState({
 
         
           
+    }
+
+    searchFn=()=>{
+
+        setTimeout(()=>{
+            this.setState({
+                isLoading:true
+            })
+            if(this.state.searchCompQuery === ''){
+                this.setState({
+                    isSearching:false,isLoading:false
+                })
+            }
+            else{
+                this.setState({
+                    isSearching:true
+                })  
+            }
+         
+            const companies2 = [];
+    
+            var ref=db.collection('companies').where("companyName","==",this.state.searchCompQuery)
+    
+            ref.get().then((querysnapShot)=>{
+                if(querysnapShot.size >=1){
+                    this.setState({
+                    message:'Search result'
+                })
+                }
+
+                else{
+                   this.setState({
+                       message:'No record found!',
+                      
+                        isLoading:false
+                    
+                   })
+                }
+               querysnapShot.forEach(doc=>{
+
+               
+                const {companyName,companyLocation}=doc.data()
+                companies2.push({
+                    key:doc.id,
+                    doc,companyName,
+                    companyLocation
+                })
+    
+                this.setState({companies2,isLoading:false})
+               })
+            })
+        },10)
     }
 
 listen=()=>{
@@ -231,12 +287,50 @@ listen=()=>{
                <View style={{backgroundColor:'#ededed',margin:10,borderRadius:10,borderBottomWidth:0,borderBottomColor:'transparent'}}>
                <Item style={{borderBottomWidth:0}}>
         
-            <Input placeholder="Search" />
+            <Input onChange={this.searchFn} onSubmitEditing={this.searchFn} onChangeText={(searchCompQuery)=>this.setState({searchCompQuery})} placeholder="Search" onFocus={()=>this.setState({isSearching:true})} />
        
           </Item>
                </View>
+               {
+                   this.state.isSearching?
+                   <View>
+                       <View><Text style={{color:'orange',padding:10}}>{this.state.message}</Text></View>
+                   <FlatList
+                    onRefresh={this.pull}
+                    refreshing={this.state.isLoading}
+                    data={this.state.companies2}
+                    
+                    renderItem={({item}) => <ListItem key={item.key} avatar>
+                    <Left>
+                    <Image style={{height:20,width:20,marginTop:10}} source={require('../../android/assets/images/company.png')}></Image>
 
-                     <FlatList
+                    </Left>
+                    <Body>
+                        <TouchableOpacity 
+                       
+                        onPress={()=>this.props.navigation.navigate('ViewCompany',{
+                            compId:item.key,UserId:this.state.UserId,UserRole:this.state.Role
+                        })}
+                        >
+                            <Text
+                                style={{
+                                marginBottom: 5,
+                                padding: 2
+                            }}>{item.companyName} </Text>
+                            <Text note style={{fontSize:12,color:'#ccc'}}>{item.companyLocation}</Text>
+                        </TouchableOpacity>
+
+                       
+                    </Body>
+                    <Right>
+                    <Image style={{height:10,width:10,marginTop:10}} source={require('../../android/assets/images/arrow-right.png')}></Image>
+
+                    </Right>
+</ListItem>}/>
+                       
+                       </View>:
+                   <View>
+                   <FlatList
                     onRefresh={this.pull}
                     refreshing={this.state.isLoading}
                     data={this.state.companies}
@@ -268,6 +362,10 @@ listen=()=>{
 
                     </Right>
 </ListItem>}/>
+                   </View>
+               }
+
+                  
               
                
                  
