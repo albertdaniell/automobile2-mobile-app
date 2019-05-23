@@ -55,9 +55,53 @@ export default class Login extends Component < Props > {
         this.setState({
             isLoading:true
         })
-var ref=db.collection('users')
-firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
+var ref=db.collection('users').where("Email","==",this.state.Email).where("Password","==",this.state.Password).where("approved_status","==","1").where("has_account","==",false)
+
+ref.get().then((dataSnap)=>{
+    if(dataSnap.size >=1){
+       // alert("present" +dataSnap.id)
+            this.setState({
+        isLoading:false
+    })
+        firebase.auth().createUserWithEmailAndPassword(this.state.Email,this.state.Password)
+        .then(()=>{
+
+            dataSnap.forEach(docData=>{
+              var updateref=db.collection('users').doc(docData.id)
+            updateref.update({
+                has_account:true
+            })
+            })
+            // var updateref=db.collection('users').where("Email","==",this.state.Email).where("Password","==",this.state.Password)
+            // updateref.update({
+            //     has_account:true
+            // })
+        
+            this.loadHomePage()
+        
+            this.setState({
+                isLoading:false
+            })
+        }).catch(error=>{
+            this.setState({
+                isLoading:false
+            })
+            alert(error.message)
+        })
+
+         return 0;
+    }
+        
+        else{
+           
+                this.setState({
+        isLoading:false
+    })
+
+    firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
 .then(()=>{
+   
+
     this.loadHomePage()
 
     this.setState({
@@ -69,6 +113,29 @@ firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
     })
     alert(error.message)
 })
+            return 0;
+        }
+})
+
+
+// firebase.auth().signInWithEmailAndPassword(this.state.Email,this.state.Password)
+// .then(()=>{
+//     // var ref=db.collection('users').where("Email","==",this.state.email).where("Password","==",this.state.email)
+//     // ref.update({
+//     //     has_account:true
+//     // })
+
+//     this.loadHomePage()
+
+//     this.setState({
+//         isLoading:false
+//     })
+// }).catch(error=>{
+//     this.setState({
+//         isLoading:false
+//     })
+//     alert(error.message)
+// })
     }
 
     loadHomePage = async() => {

@@ -48,13 +48,15 @@ export default class Splash extends Component < Props > {
                     bottom: 0,
                 }}>
 
-               <FadeIn>
-               <View style={{padding:30,letterSpacing:15,color:'black',fontSize:14,position:'absolute',bottom:70,textAlign:'center',alignItems:'center',width:'100%'}}>
-
+             
+               <View style={{padding:30,letterSpacing:15,color:'black',fontSize:14,position:'absolute',bottom:40,textAlign:'center',alignItems:'center',width:'100%',zIndex:1}}>
+<TouchableOpacity  style={{padding:20}} onPress={()=>this.props.navigation.navigate('CreateScreen')}>
 <Text style={{fontWeight:'bold',fontSize:16,letterSpacing:1}}>Dont have account?  Sign Up</Text>
+
+</TouchableOpacity>
 </View>
 
-               </FadeIn>
+          
 
           <Anime1>
           <TouchableOpacity

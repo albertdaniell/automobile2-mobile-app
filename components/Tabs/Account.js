@@ -60,9 +60,57 @@ export default class Account extends Component < Props > {
         super(props)
         this.state = {
             active: false,
-            isLoading:false
+            isLoading:false,
+            superUser:false,
+            Username:'',
+            Email:''
         };
     }
+
+    checkUser=()=>{
+        firebase.auth().onAuthStateChanged((user)=> {
+            if (user) {
+//update state
+
+this.setState({
+    Email:user.email
+})
+                //get user datails
+
+
+        var ref=db.collection('users')
+        var userRef=ref.where("Email","==",user.email)
+        userRef.get().then(dataSnap=>{
+            dataSnap.forEach((doc)=>{
+
+                this.setState({
+                    Username:doc.data().Username,
+                    Role:doc.data().Role,
+                    UserId:doc.id
+                })
+
+                if(this.state.Role === '1'){
+                    this.setState({
+                        superUser:true
+                    })
+                }
+              // alert(this.state.Role)
+
+               
+            })
+        })
+    
+            } else {
+         
+            }
+          });
+
+        
+          
+    }
+
+
+
     loadGetStarted = async() => {
 
         setTimeout(() => {
@@ -101,7 +149,10 @@ export default class Account extends Component < Props > {
           
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+
+        this.checkUser()
+    }
     render() {
         return (
 
@@ -123,24 +174,33 @@ export default class Account extends Component < Props > {
                         style={{
                         fontSize: 30,
                         padding: 10,
+                        fontWeight:'bold'
                     }}>Account</Text>
 
                     <Separator style={{marginTop:5}} bordered>
-            <Text>Email</Text>
+            <Text>Profile</Text>
           </Separator>
-          <TouchableOpacity style={styles.myTouch}>
-           <Text>albertagoya@mail.com</Text>
+        <Item style={{borderBottomWidth:0,marginLeft:15,width:'100%'}}>
+        <Icon name='ios-contact' size={50} style={{marginTop:15}} color="grey"></Icon>
+
+        <TouchableOpacity style={styles.myTouch}>
+           <Text>{this.state.Username}</Text>
+           <Text style={{color:'#ccc'}}>{this.state.Email}</Text>
            </TouchableOpacity>
+        </Item>
 
           <Separator style={{marginTop:15}} bordered>
             <Text>Account</Text>
           </Separator>
       
-          <TouchableOpacity 
+         {
+             this.state.superUser?
+             <TouchableOpacity 
           onPress={()=>this.props.navigation.navigate('Users')}
           style={styles.myTouch}>
            <Text>Users</Text>
-           </TouchableOpacity>
+           </TouchableOpacity>:null
+         }
           <TouchableOpacity style={styles.myTouch}>
            <Text>About</Text>
            </TouchableOpacity>
@@ -155,8 +215,9 @@ export default class Account extends Component < Props > {
            </TouchableOpacity>
         
                     </ScrollView>
-                 
-                    <Fab
+                    {
+                 this.state.superUser?
+                 <Fab
                         active={this.state.active}
                         direction="up"
                         containerStyle={{}}
@@ -168,6 +229,9 @@ export default class Account extends Component < Props > {
                         <Icon name='ios-add' size={40} color="purple"></Icon>
 
                     </Fab>
+                 
+                 :null
+             }
                 </View>
             </FadeIn>
 
@@ -195,7 +259,9 @@ const styles = StyleSheet.create({
         width:'100%',
         borderBottomColor:'#ccc',
         borderBottomWidth:.5,
-        marginLeft:10
+        marginLeft:10,
+        width:'100%',
+       
         
     },
     loadingdiv:{

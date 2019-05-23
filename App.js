@@ -97,6 +97,7 @@ const AppNavigator1 = createStackNavigator({
         navigationOptions: {
             header: null
         }
+        
     },
     AddCompany:{
       screen:AddCompany,

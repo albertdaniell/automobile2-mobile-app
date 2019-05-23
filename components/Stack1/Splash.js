@@ -97,7 +97,7 @@ this.setState({
                 .props
                 .navigation
                 .reset([NavigationActions.navigate({routeName: 'Home1'})], 0)
-        }, 500)
+        }, 200)
 
     }
 

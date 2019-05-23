@@ -79,13 +79,15 @@ export default class Splash extends Component < Props > {
              Username:this.state.Username,
              Email:this.state.Email,
              Password:this.state.Password,
-             Role:''
+             Role:'0',
+             approved_status:'0',
+             has_account:false
          }).then(()=>{
 
             this.setState({
                 UserRegistered:true
             })
-             alert('Data has been captured')
+            
  
          }).catch(error=>{
              alert(error.message)
