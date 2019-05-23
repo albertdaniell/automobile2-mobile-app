@@ -149,7 +149,7 @@ export default class ViewCompany extends Component < Props > {
 setTimeout(()=>{
     this.getCompanyDetails()
     this.getAutomobile() 
-},10)
+},500)
     }
 
     getCompanyDetails = () => {
@@ -309,14 +309,14 @@ setTimeout(()=>{
         this.setState({compId: compId,UserId:UserId,UserRole:UserRole})
         setTimeout(()=>{
             this.getAutomobile() 
-        },100)
+        },1000)
         setTimeout(() => {
             this.getCompanyDetails()
             this.getCompanyVehicles()
             this.getAutomationData()
             
           
-        }, 100)
+        }, 1000)
 
         
     }

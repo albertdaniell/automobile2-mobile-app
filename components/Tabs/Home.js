@@ -80,7 +80,8 @@ export default class Home extends Component < Props > {
             isSearching:false,
             companies2:[],
             searchCompQuery:'',
-            message:''
+            message:'',
+            companyDataPresent:true
         };
     }
 
@@ -227,13 +228,27 @@ listen=()=>{
 
     getAllCompanies=()=>{
         this.setState({
-            isLoading:true
+            isLoading:true,
+            
         })
         const companies = [];
 
         var ref=db.collection('companies')
 
         ref.get().then((querysnapShot)=>{
+
+            if (querysnapShot.size >=1){
+this.setState({
+    companyDataPresent:true
+})
+            }
+
+            else{
+                this.setState({
+                 companyDataPresent:false,isLoading:false
+                })
+
+            }
            querysnapShot.forEach(doc=>{
             const {companyName,companyLocation}=doc.data()
             companies.push({
@@ -330,7 +345,9 @@ listen=()=>{
                        
                        </View>:
                    <View>
-                   <FlatList
+                      {
+                          this.state.companyDataPresent?
+                          <FlatList
                     onRefresh={this.pull}
                     refreshing={this.state.isLoading}
                     data={this.state.companies}
@@ -362,6 +379,15 @@ listen=()=>{
 
                     </Right>
 </ListItem>}/>
+                          
+                          :
+                          <View style={{alignItems:'center',justifyContent:'center',width:'100%',height:'100%',marginTop:-50}}>
+                       <Image style={{height:'50%',width:'70%'}} source={require('../../android/assets/images/Nodata.png')}></Image>
+
+                       </View> 
+                      }
+
+               
                    </View>
                }
 
@@ -381,7 +407,7 @@ listen=()=>{
                         backgroundColor: 'orange'
                     }}
                         position="bottomRight"
-                        onPress={()=>this.props.navigation.navigate('AddCompany')}>
+                        onPress={()=>this.props.navigation.navigate('AddCompany',{UserRole:this.state.Role})}>
                         <Icon name='ios-add' size={40} color="purple"></Icon>
 
                     </Fab>

@@ -104,15 +104,23 @@ this.setState({
     componentDidMount() {
         this.checkUser()
         this.getGeo()
+       
         
+    }
+
+    geoSuucess=(position)=>{
+        this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
+//alert(this.state.longi)
+    }
+
+    geoFailure=(error)=>{
+        alert(error.message + ". Please enable location")
     }
 
     getGeo=()=>{
         navigator
         .geolocation
-        .getCurrentPosition(position => {
-            this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
-        })
+        .getCurrentPosition(this.geoSuucess,this.geoFailure)
 
       
     }

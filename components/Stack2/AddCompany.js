@@ -71,7 +71,8 @@ export default class Home extends Component < Props > {
             showSubmitBtn:true,
             showFinishBtn:true,
             longi:'',
-            lati:''
+            lati:'',
+            UserRole:''
 
             
         };
@@ -85,16 +86,34 @@ export default class Home extends Component < Props > {
     componentDidMount() {
 
         this.setState({chosenDate: todayDate,dateOfEntry:todayDate})
-        this.getGeo()
-   
+        setTimeout(()=>{
+            this.getGeo()
+        })
+        const UserRole = this
+        .props
+        .navigation
+        .getParam('UserRole', 'NO-USERole');
+
+        this.setState({
+            UserRole:UserRole
+        })
+        
+
+    }
+
+    geoSuucess=(position)=>{
+        this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
+//alert(this.state.longi)
+    }
+
+    geoFailure=(error)=>{
+        alert(error.message + ". Please enable location")
     }
 
     getGeo=()=>{
         navigator
         .geolocation
-        .getCurrentPosition(position => {
-            this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
-        })
+        .getCurrentPosition(this.geoSuucess,this.geoFailure)
 
       
     }
@@ -147,7 +166,7 @@ export default class Home extends Component < Props > {
     
             }).then((docRef)=>{
                // alert("Success!")
-                this.props.navigation.replace('ViewCompany',{compId:docRef.id})
+                this.props.navigation.replace('ViewCompany',{compId:docRef.id,UserRole:this.state.UserRole})
                 console.log("Addedd successfully with id"+docRef.id)
     
                 setTimeout(()=>{
