@@ -16,15 +16,74 @@ import {
     StatusBar,YellowBox
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 import FadeIn from '../anime/FadeIn'
 //firebase
 import firebase from '../Firebase'
+import {PermissionsAndroid} from 'react-native';
+
 var db=firebase.firestore()
 
 // Import Navigation
 
 type Props = {};
 export default class Splash extends Component < Props > {
+
+    autoEnableLocation=()=>{
+        RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({interval: 10000, fastInterval: 5000})
+        .then(data => {
+      
+          if(data === 'already-enabled'){
+            this.getGeo()  
+      //alert("Location has already been enabled")
+          }
+      
+          else if(data === 'enabled'){
+            this.getGeo()
+     // alert("Thank you for enabling location")
+          }
+      
+          else{
+              alert(0)
+      
+          }
+          // The user has accepted to enable the location services
+          // data can be :
+          //  - "already-enabled" if the location services has been already enabled
+          //  - "enabled" if user has clicked on OK button in the popup
+        }).catch(err => {
+          // The user has not accepted to enable the location services or something went wrong during the process
+          // "err" : { "code" : "ERR00|ERR01|ERR02", "message" : "message"}
+          // codes : 
+          //  - ERR00 : The user has clicked on Cancel button in the popup
+          //  - ERR01 : If the Settings change are unavailable
+          //  - ERR02 : If the popup has failed to open
+        });
+    }
+
+    _requestLocationPermission = async ()=>  {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Autmobile Permission',
+              message:
+                'This Application need to access your location ' +
+                'for accuracy.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('You can use the Location Api');
+          } else {
+            console.log('Location permission denied');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      }
 
     constructor(props){
         
@@ -102,19 +161,25 @@ this.setState({
     }
 
     componentDidMount() {
-        this.checkUser()
+        this. _requestLocationPermission()
         this.getGeo()
+        this.autoEnableLocation()
+    
+
+        setTimeout(()=>{
+            this.checkUser()
+        },3000)
        
         
     }
 
     geoSuucess=(position)=>{
         this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
-//alert(this.state.longi)
+alert(this.state.longi)
     }
 
     geoFailure=(error)=>{
-        alert(error.message + ". Please enable location")
+        //alert(error.message + ". Please enable location")
     }
 
     getGeo=()=>{

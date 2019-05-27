@@ -84,7 +84,6 @@ export default class Home extends Component < Props > {
             companyDataPresent:true,
             longi:'',
             lati:'',
-            recentSearchcompanies:[]
         };
     }
 
@@ -111,7 +110,7 @@ alert(this.state.longi)
       
         setTimeout(()=>{
             this.getAllCompanies()
-        },10)
+        },1000)
        
             }
 
@@ -135,8 +134,6 @@ this.setState({
                     Role:doc.data().Role,
                     UserId:doc.id
                 })
-
-               // alert(doc.id)
 
                 if(this.state.Role === '1'){
                     this.setState({
@@ -184,46 +181,71 @@ this.setState({
               //  return com.companyName == 'Test1'
               var str =JSON.stringify(com.companyName);
               var patt = new RegExp(this.state.searchCompQuery);
+              
+              if(patt.test(str) == true){
+                console.log("data exists"+ str)
+                //console.log(com)
+                const companies2 = [];
 
-              return patt.test(str)
-    
-          
-            })
+                var compdata={ ...com }
 
-            this.setState({
-                companies2:mycompdata,isLoading:false
+                //console.log(compdata.doc.data())
+
+                const {companyName,companyLocation,key}=compdata.doc.data()
+
+                companies2.push({
+                               key,
+                               
+                                companyName,
+                                companyLocation
+                            })
+                
+                            this.setState({companies2,isLoading:false})
+
+                            //console.log(companies2)
+
+                //   this.setState({
+                //       companies2:com
+                //   })
+              }
+//alert(com.companyName == 'Test1')
             })
 
             console.log(mycompdata)
          
+        //     const companies2 = [];
+    
+        //     var ref=db.collection('companies').where("companyName","==",this.state.searchCompQuery)
+    
+        //     ref.get().then((querysnapShot)=>{
+        //         if(querysnapShot.size >=1){
+        //             this.setState({
+        //             message:'Search result'
+        //         })
+        //         }
+
+        //         else{
+        //            this.setState({
+        //                message:'No record found!',
+                      
+        //                 isLoading:false
+                    
+        //            })
+        //         }
+        //        querysnapShot.forEach(doc=>{
+
                
-     
-         },1000)
-    }
-
-
-    updateRecentSearch=(compId,UserId,companyName)=>{
-      setTimeout(()=>{
-        this.props.navigation.navigate('ViewCompany',{
-            compId:compId,UserId:this.state.UserId,UserRole:this.state.Role
-        })
-        //alert(companyName)
-        var ref=db.collection('searches')
-        ref.add({
-            userid:UserId,
-            postid:compId,
-            companyName:companyName
-            
-
-        }).then(()=>{
-            
-            console.log("Data has been added")
-
-        }).catch(error=>{
-            console.log(error.message)
-        })
-      },1000)
-
+        //         const {companyName,companyLocation}=doc.data()
+        //         companies2.push({
+        //             key:doc.id,
+        //             doc,companyName,
+        //             companyLocation
+        //         })
+    
+        //         this.setState({companies2,isLoading:false})
+        //        })
+        //     })
+         },3000)
     }
 
 listen=()=>{
@@ -239,30 +261,11 @@ listen=()=>{
 }
 
 
-    async componentDidMount() {
-
-       
-        const fn1=await this.checkUser();
-        const fn11=await fn1
-        const fn2=await this.getAllCompaniesSearches()
-        const fn22=await fn2
-
-        const fn3=await this.getGeo()
-        const fn33=await fn3
-        const fn4=await this.test()
-        const fn44=await fn4
-        
-
-        // fn2
-        // const fn3=await fn2
-        // fn3
-
-        // const
-        // setTimeout(()=>{
-        //     this.checkUser()
-        //     this.getGeo()
-        //     this.getAllCompaniesSearches()
-        // },1000)
+    componentDidMount() {
+        setTimeout(()=>{
+            this.checkUser()
+            this.getGeo()
+        },500)
       //  this.listen()
 
       
@@ -285,50 +288,6 @@ listen=()=>{
         }
         this.setState({appState: nextAppState});
       };
-
-
-
-      getAllCompaniesSearches=()=>{
-        setTimeout(()=>{
-            this.setState({
-                isLoading:true,
-                
-            })
-            const recentSearchcompanies = [];
-            var userid=this.state.UserId;
-    
-            var ref=db.collection('searches').where("userid","==",`${userid}`)
-    
-            ref.get().then((querysnapShot)=>{
-
-                
-
-    
-                if (querysnapShot.size >=1){
-    //alert("nicee")
-                }
-    
-                else{
-                    //alert("No data for "+this.state.UserId)
-                    this.setState({
-                   //  companyDataPresent:false,isLoading:false
-                    })
-    
-                }
-               querysnapShot.forEach(doc=>{
-                const {companyName,companyLocation}=doc.data()
-                recentSearchcompanies.push({
-                    key:doc.id,
-                    doc,companyName,
-                    companyLocation
-                })
-    
-                this.setState({recentSearchcompanies,isLoading:false})
-               })
-            })
-        },1000)
-
-    }
 
     getAllCompanies=()=>{
         this.setState({
@@ -413,44 +372,15 @@ this.setState({
                {
                    this.state.isSearching?
                    <View>
-                       <View><Text style={{color:'orange',padding:10,marginTop:-10}}>{this.state.message}</Text></View>
-<View>
+                       <View><Text style={{color:'orange',padding:10}}>{this.state.message}</Text></View>
 
-    <Text style={{fontStyle:'italic',padding:10,fontWeight:'bold'}}>Recent Searches</Text>
-  <ScrollView style={{height:200,backgroundColor:'#ededed'}}>
-  <FlatList
-  
-                    data={this.state.recentSearchcompanies}
-                    
-                    renderItem={({item}) => <ListItem key={item.key} avatar>
-                    <Left>
-                    <Icon name='ios-time' size={30} color='black'></Icon>
-
-                    </Left>
-                    <Body>
-                        <TouchableOpacity 
-                        onPress={()=>this.updateRecentSearch(item.key,this.state.UserId,item.companyName)}
-                       
-                       
-                        >
-                            <Text
-                                style={{
-                                marginBottom: 5,
-                                padding: 2
-                            }}>{item.companyName} </Text>
-                            <Text note style={{fontSize:12,color:'#ccc'}}>{item.companyLocation}</Text>
-                        </TouchableOpacity>
-
-                       
-                    </Body>
-                    <Right>
-                    <Image style={{height:10,width:10,marginTop:10}} source={require('../../android/assets/images/arrow-right.png')}></Image>
-
-                    </Right>
-</ListItem>}/>
-  </ScrollView>
-</View>
-                
+                       {/* {
+                           this.state.companies2.map((com)=>{
+                               return(
+                                   <Text key={com.key}>{com.companyName}</Text>
+                               )
+                           })
+                       } */}
                    <FlatList
                     onRefresh={this.pull}
                     refreshing={this.state.isLoading}
@@ -463,9 +393,10 @@ this.setState({
                     </Left>
                     <Body>
                         <TouchableOpacity 
-                        onPress={()=>this.updateRecentSearch(item.key,this.state.UserId,item.companyName)}
                        
-                       
+                        onPress={()=>this.props.navigation.navigate('ViewCompany',{
+                            compId:item.key,UserId:this.state.UserId,UserRole:this.state.Role
+                        })}
                         >
                             <Text
                                 style={{

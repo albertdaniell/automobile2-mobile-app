@@ -18,7 +18,7 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     ScrollView,
-    ActivityIndicator,YellowBox,Image
+    ActivityIndicator,YellowBox,Image,FlatList
 } from 'react-native';
 
 import {NavigationActions} from 'react-navigation';
@@ -43,6 +43,7 @@ var todayDate = new Date()
 //firebase
 import firebase from '../Firebase'
 var db=firebase.firestore()
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 
 
 type Props = {};
@@ -72,11 +73,45 @@ export default class Home extends Component < Props > {
             showFinishBtn:true,
             longi:'',
             lati:'',
-            UserRole:''
+            UserRole:'',
+            vehiclesApi:[]
 
             
         };
     }
+
+    autoEnableLocation=()=>{
+        RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({interval: 10000, fastInterval: 5000})
+        .then(data => {
+      
+          if(data === 'already-enabled'){
+          //  this.getGeo()  
+      //alert("Location has already been enabled")
+          }
+      
+          else if(data === 'enabled'){
+           // this.getGeo()
+     // alert("Thank you for enabling location")
+          }
+      
+          else{
+              alert(0)
+      
+          }
+          // The user has accepted to enable the location services
+          // data can be :
+          //  - "already-enabled" if the location services has been already enabled
+          //  - "enabled" if user has clicked on OK button in the popup
+        }).catch(err => {
+          // The user has not accepted to enable the location services or something went wrong during the process
+          // "err" : { "code" : "ERR00|ERR01|ERR02", "message" : "message"}
+          // codes : 
+          //  - ERR00 : The user has clicked on Cancel button in the popup
+          //  - ERR01 : If the Settings change are unavailable
+          //  - ERR02 : If the popup has failed to open
+        });
+    }
+
 
     setDate(newDate) {
         this.setState({chosenDate: newDate});
@@ -86,9 +121,11 @@ export default class Home extends Component < Props > {
     componentDidMount() {
 
         this.setState({chosenDate: todayDate,dateOfEntry:todayDate})
-        setTimeout(()=>{
-            this.getGeo()
-        })
+      
+        this.getGeo()
+        //this._getVehiclesApi();
+           
+      
         const UserRole = this
         .props
         .navigation
@@ -104,21 +141,48 @@ export default class Home extends Component < Props > {
     geoSuucess=(position)=>{
         this.setState({longi: position.coords.longitude, lati: position.coords.latitude, error: null});
 //alert(this.state.longi)
+
     }
 
     geoFailure=(error)=>{
-        alert(error.message + ". Please enable location")
+     
     }
 
     getGeo=()=>{
+      
         navigator
         .geolocation
         .getCurrentPosition(this.geoSuucess,this.geoFailure)
 
-      
+       
+    }
+
+    _getVehiclesApi = async () =>{
+        console.log("Fetching data from api...")
+        const vehiclesApiData=[];
+        const carsUrl='https://vpic.nhtsa.dot.gov/api/vehicles/getallmanufacturers?format=json';
+        const fetchCars=  await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=json')
+        
+        const jsonCars=await fetchCars.json()
+        console.log(jsonCars)
+
+        this.setState({
+            vehiclesApi:jsonCars.Results
+        })
+
+        //console.log(this.state.vehiclesApi)
+
+        
+        //alert(jsonCars)
     }
 
     submitFn1=async()=>{
+
+        // if(this.state.companyName === '' || this.state.companyLocation === ''){
+        //     alert("Fields cannot be empty!")
+
+        //     return 0;
+        // }
        const step1= this.setState({
             
             isLoading:true,
@@ -215,6 +279,18 @@ export default class Home extends Component < Props > {
       
     }
 
+    addVehicle2(value){
+        //alert(value)
+
+        const {vehicles} = this.state.vehicles;
+const newItem= value
+
+        this.setState({
+            vehicles:[...this.state.vehicles,newItem],
+            
+        })
+    }
+
     addVehicle=()=>{
 
         if(this.state.vehicleInput === ''){
@@ -260,6 +336,16 @@ const newItem= this.state.vehicleInput
 
             <FadeIn style={{height:'100%'}}>
                 <StatusBar backgroundColor="purple" barStyle="light-content"/>
+                {/* {this.state.vehiclesApi.Results} */}
+          
+{/*                
+                <FlatList
+                  
+                    data={this.state.vehiclesApi}
+                    
+                    renderItem={({item}) => <Text key={item.key} avatar>
+                                           
+</Text>}/> */}
                {
                    this.state.isLoading?
                    <View style={styles.loadingdiv}>
@@ -270,7 +356,8 @@ const newItem= this.state.vehicleInput
 
                 </View>:null
                }
-                <ScrollView>
+               
+                <View showsVerticalScrollIndicator={false}>
 
                     
                     <View style={styles.container}>
@@ -280,12 +367,26 @@ const newItem= this.state.vehicleInput
                      {
                          this.state.form1Complete?
                          <View style={styles.form2}>
+
+                         <ScrollView style={{maxHeight:100,backgroundColor:'#ccc',marginBottom:20}}>
+              {
+                    this.state.vehiclesApi.map((vehicle)=>{
+                        return(
+                            <TouchableOpacity  onPress={()=>this.addVehicle2(vehicle.Make_Name)} style={{padding:10,borderBottomColor:'#ccc'}}>
+                            <Text>{vehicle.Make_Name}</Text>
+                            </TouchableOpacity>
+                        )
+                    })
+                }
+              </ScrollView>
                              <TouchableOpacity
                              onPress={()=>this.setState({form1Complete:false})}
                               style={{padding:10}}>
                                  <Text>Go back to previous</Text>
                              </TouchableOpacity>
-                            <Text style={styles.label}>Vehicle category</Text>
+                             <Text style={styles.label}>Vehicle category</Text>
+
+                          
 
 {
     this.state.vehicles.map((vehicle,index)=>{
@@ -442,7 +543,7 @@ const newItem= this.state.vehicleInput
                     </View>
 
                     
-                </ScrollView>
+                </View>
             
             </FadeIn>
 
@@ -496,5 +597,6 @@ const styles = StyleSheet.create({
         
     },
     form2:{
+        height:'100%'
     }
 });
