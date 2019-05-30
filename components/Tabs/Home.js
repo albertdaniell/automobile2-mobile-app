@@ -17,7 +17,7 @@ import {
     TextInput,
     KeyboardAvoidingView,
     ScrollView,
-    ActivityIndicator,YellowBox, FlatList,AppState
+    ActivityIndicator,YellowBox, FlatList,AppState,Animated,Easing
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 import FadeIn from '../anime/FadeIn'
@@ -62,6 +62,8 @@ export default class Home extends Component < Props > {
 
     constructor(props) {
         super(props)
+
+        
         YellowBox.ignoreWarnings(['Setting a timer']);
         YellowBox.ignoreWarnings(['Failed prop type']);
         YellowBox.ignoreWarnings(["Can't perform a React state update on an unmounted component"]);
@@ -84,8 +86,32 @@ export default class Home extends Component < Props > {
             companyDataPresent:true,
             longi:'',
             lati:'',
-            recentSearchcompanies:[]
+            recentSearchcompanies:[],
+            showRecentSearches:null,
+            myAutoFocus:false
         };
+        this.headerView=new Animated.Value(this.state.isSearching?1:0)
+    }
+
+
+    headerHide=()=>{
+        this.setState({isSearching:true,myAutoFocus:true})
+
+
+        this.headerView.setValue(0)
+        
+        Animated.timing(this.headerView,{
+            toValue:this.state.isSearching?0:1,
+            duration:1000,
+            easing:Easing.bounce
+        }).start()
+    }
+
+    cancelSearching=()=>{
+        this.setState({
+            isSearching:false,
+            myAutoFocus:false
+        })
     }
 
     geoSuucess=(position)=>{
@@ -111,48 +137,50 @@ alert(this.state.longi)
       
         setTimeout(()=>{
             this.getAllCompanies()
-        },10)
+        },1000)
        
             }
 
     checkUser=()=>{
-        firebase.auth().onAuthStateChanged((user)=> {
-            if (user) {
+   setTimeout(()=>{
+    firebase.auth().onAuthStateChanged((user)=> {
+        if (user) {
 //update state
 
 this.setState({
-    Email:user.email
+Email:user.email
 })
-                //get user datails
+            //get user datails
 
 
-        var ref=db.collection('users')
-        var userRef=ref.where("Email","==",user.email)
-        userRef.get().then(dataSnap=>{
-            dataSnap.forEach((doc)=>{
-                this.setState({
-                    Username:doc.data().Username,
-                    Role:doc.data().Role,
-                    UserId:doc.id
-                })
-
-               // alert(doc.id)
-
-                if(this.state.Role === '1'){
-                    this.setState({
-                        superUser:true
-                    })
-                }
-              // alert(this.state.Role)
-
-               
+    var ref=db.collection('users')
+    var userRef=ref.where("Email","==",user.email)
+    userRef.get().then(dataSnap=>{
+        dataSnap.forEach((doc)=>{
+            this.setState({
+                Username:doc.data().Username,
+                Role:doc.data().Role,
+                UserId:doc.id
             })
-        })
-    
-            } else {
-         
+
+           // alert(doc.id)
+
+            if(this.state.Role === '1'){
+                this.setState({
+                    superUser:true
+                })
             }
-          });
+          // alert(this.state.Role)
+
+           
+        })
+    })
+
+        } else {
+     
+        }
+      });
+   },500)
 
         
           
@@ -167,11 +195,11 @@ this.setState({
 
         setTimeout(()=>{
             this.setState({
-                isLoading:true
+                isLoading:true,showRecentSearches:false
             })
             if(this.state.searchCompQuery === ''){
                 this.setState({
-                    isSearching:false,isLoading:false
+                    isSearching:false,isLoading:false,showRecentSearches:true
                 })
             }
             else{
@@ -215,14 +243,15 @@ this.setState({
             companyName:companyName
             
 
-        }).then(()=>{
+        }).then((searchSnap)=>{
+          
             
             console.log("Data has been added")
 
         }).catch(error=>{
             console.log(error.message)
         })
-      },1000)
+      },100)
 
     }
 
@@ -240,7 +269,7 @@ listen=()=>{
 
 
     async componentDidMount() {
-
+//const anime=await this.headerHide();
        
         const fn1=await this.checkUser();
         const fn11=await fn1
@@ -249,8 +278,8 @@ listen=()=>{
 
         const fn3=await this.getGeo()
         const fn33=await fn3
-        const fn4=await this.test()
-        const fn44=await fn4
+        // const fn4=await this.test()
+        // const fn44=await fn4
         
 
         // fn2
@@ -290,40 +319,35 @@ listen=()=>{
 
       getAllCompaniesSearches=()=>{
         setTimeout(()=>{
-            this.setState({
-                isLoading:true,
-                
-            })
+           
             const recentSearchcompanies = [];
             var userid=this.state.UserId;
     
             var ref=db.collection('searches').where("userid","==",`${userid}`)
     
             ref.get().then((querysnapShot)=>{
-
-                
-
-    
-                if (querysnapShot.size >=1){
-    //alert("nicee")
+                if(querysnapShot.size >=1){
+                    this.setState({
+                        showRecentSearches:true
+                    })
                 }
     
                 else{
-                    //alert("No data for "+this.state.UserId)
                     this.setState({
-                   //  companyDataPresent:false,isLoading:false
+                        showRecentSearches:false
                     })
-    
                 }
+                
+
                querysnapShot.forEach(doc=>{
-                const {companyName,companyLocation}=doc.data()
+                const {companyName,companyLocation,postid}=doc.data()
                 recentSearchcompanies.push({
                     key:doc.id,
-                    doc,companyName,
+                    doc,companyName,postid,
                     companyLocation
                 })
     
-                this.setState({recentSearchcompanies,isLoading:false})
+                this.setState({recentSearchcompanies})
                })
             })
         },1000)
@@ -385,39 +409,76 @@ this.setState({
 
     
     render() {
+
+        const marginTop=this.headerView.interpolate({
+            inputRange:[0,1],
+            outputRange:this.state.isSearching?[0,-60]:[0,1]
+        })
+
+        // const marginTop2=this.headerView.interpolate({
+        //     inputRange:[1,0],
+        //     outputRange:[-60,0]
+        // })
+
+
+        const inputWidth=this.headerView.interpolate({
+            inputRange:[0,1],
+            outputRange:this.state.isSearching?['100%','80%']:['100%','99%']
+        })
         return (
 
-            <FadeIn>
+            <View>
                 <StatusBar backgroundColor="purple" barStyle="light-content"/>
+              
                 <NavigationEvents
                   onWillFocus={
                    this.test
                   }
                 />
+
+                
                 <View style={styles.container}>
-                 
+                <Animated.View style={{marginTop}}>
+
+<Text 
+   style={{
+   fontSize: 30,
+   padding: 10,
+   fontWeight:'bold'
+}}>Explore</Text>
+</Animated.View>
                    
-                     <Text 
-                        style={{
-                        fontSize: 30,
-                        padding: 10,
-                        fontWeight:'bold'
-                    }}>Explore</Text>
-               <View style={{backgroundColor:'#ededed',margin:10,borderRadius:10,borderBottomWidth:0,borderBottomColor:'transparent'}}>
+     
+           <View  style={{borderBottomColor:'transparent',margin:10}}>
                <Item style={{borderBottomWidth:0}}>
-        
-            <Input onFocus={()=>this.setState({isSearching:true})} onChange={this.searchFn} onSubmitEditing={this.searchFn} onChangeText={(searchCompQuery)=>this.setState({searchCompQuery})} placeholder="Search" />
-       
+<Animated.View style={{backgroundColor:'#ededed',width:inputWidth,padding:10,borderRadius:10,borderBottomWidth:0,height:50}}>
+<Input style={{padding:1}} autoFocus={this.state.myAutoFocus}  onFocus={this.headerHide} onChange={this.searchFn} onSubmitEditing={this.searchFn} onChangeText={(searchCompQuery)=>this.setState({searchCompQuery})} placeholder="Search" />
+
+    </Animated.View>        
+      {
+          this.state.isSearching?
+          <Right>
+
+              <TouchableOpacity onPress={this.cancelSearching}>
+              <Text style={{backgroundColor:'white',color:'blue',padding:10}}>Cancel</Text>
+              </TouchableOpacity>
+          </Right>
+          :null
+      }
           </Item>
-               </View>
+           </View>
+          
                {
                    this.state.isSearching?
                    <View>
-                       <View><Text style={{color:'orange',padding:10,marginTop:-10}}>{this.state.message}</Text></View>
+                       <View><Text style={{color:'orange',padding:10,marginTop:-15}}>{this.state.message}</Text></View>
 <View>
 
-    <Text style={{fontStyle:'italic',padding:10,fontWeight:'bold'}}>Recent Searches</Text>
-  <ScrollView style={{height:200,backgroundColor:'#ededed'}}>
+    {
+        this.state.showRecentSearches?
+        <View style={{marginTop:-20}}>
+        <Text style={{fontStyle:'italic',padding:10,fontWeight:'bold'}}>Recent Searches</Text>
+  <ScrollView style={{maxHeight:200,backgroundColor:'#ededed'}}>
   <FlatList
   
                     data={this.state.recentSearchcompanies}
@@ -429,9 +490,11 @@ this.setState({
                     </Left>
                     <Body>
                         <TouchableOpacity 
-                        onPress={()=>this.updateRecentSearch(item.key,this.state.UserId,item.companyName)}
-                       
-                       
+
+                        onPress={()=>this.props.navigation.navigate('ViewCompany',{
+                            compId:item.postid,UserId:this.state.UserId,UserRole:this.state.Role
+                        })}
+                        
                         >
                             <Text
                                 style={{
@@ -449,6 +512,10 @@ this.setState({
                     </Right>
 </ListItem>}/>
   </ScrollView>
+        </View>
+        
+        :null
+    }
 </View>
                 
                    <FlatList
@@ -522,7 +589,7 @@ this.setState({
                           
                           :
                           <View style={{alignItems:'center',justifyContent:'center',width:'100%',height:'100%',marginTop:-50}}>
-                       <Image style={{height:'50%',width:'70%'}} source={require('../../android/assets/images/Nodata.png')}></Image>
+                       <Image style={{height:'50%',width:'60%'}} source={require('../../android/assets/images/Nodata.png')}></Image>
 
                        </View> 
                       }
@@ -554,7 +621,7 @@ this.setState({
                  
                  :null
              }
-            </FadeIn>
+            </View>
 
         );
     }

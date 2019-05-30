@@ -18,7 +18,7 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     ScrollView,
-    ActivityIndicator,YellowBox,Image,Animated
+    ActivityIndicator,YellowBox,Image,Animated,Easing
 } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 import FadeIn from '../anime/FadeIn'
@@ -51,7 +51,7 @@ export default class ViewCompany extends Component < Props > {
         super(props)
         YellowBox.ignoreWarnings(['Setting a timer']);
         YellowBox.ignoreWarnings(['Each child in a list should have a unique "key" prop']);
-
+      this.opacityAnimeValue=new Animated.Value(0)
         this.state = {
             active: false,
             compId: '',
@@ -75,6 +75,16 @@ export default class ViewCompany extends Component < Props > {
             areasAutomated:'',
             approved_status:''
         };
+    }
+
+    opacityAnime=()=>{
+        this.opacityAnimeValue.setValue(0)
+        Animated.timing(this.opacityAnimeValue,
+            {
+                toValue:.9,
+                duration:2500,
+                easing:Easing.linear
+            }).start(()=>this.opacityAnime())
     }
     loadGetStarted = async() => {
 
@@ -149,7 +159,7 @@ export default class ViewCompany extends Component < Props > {
 setTimeout(()=>{
     this.getCompanyDetails()
     this.getAutomobile() 
-},500)
+},590000)
     }
 
     getCompanyDetails = () => {
@@ -259,9 +269,11 @@ setTimeout(()=>{
 
     componentDidMount() {
 
+        this.opacityAnime()
+
         this.scrollY=new Animated.Value(0)
 
-        this.startHeaderHeight=100+StatusBar.currentHeight
+        this.startHeaderHeight=90+StatusBar.currentHeight
         this.endHeaderHeight=70+StatusBar.currentHeight
 
         this.animatedHeaderHeight=this.scrollY.interpolate({
@@ -309,30 +321,28 @@ setTimeout(()=>{
         this.setState({compId: compId,UserId:UserId,UserRole:UserRole})
         setTimeout(()=>{
             this.getAutomobile() 
-        },1000)
+        },2000)
         setTimeout(() => {
             this.getCompanyDetails()
             this.getCompanyVehicles()
             this.getAutomationData()
             
           
-        }, 1000)
+        }, 2000)
 
         
     }
     render() {
+        const animeOpacity=this.opacityAnimeValue.interpolate({
+            inputRange: [0, 0.5, 0.9],
+            outputRange: [0, 1, 0]
+        })
         return (
+
+
+
 <View style={{height:'100%'}}>
-{
-    this.state.isLoading?
-    <View style={styles.loadingdiv}>
-                   <View style={{backgroundColor:'#fff',padding:20,borderRadius:5}}>
-                   <ActivityIndicator size="large" color="orange" />
 
-                   </View>
-
-                </View>:null
-}
 <ScrollView onScroll={Animated.event(
                                 [
                                     {nativeEvent:{contentOffset:{y:this.scrollY}}}
@@ -352,7 +362,199 @@ setTimeout(()=>{
                     }}
                         source={require('../../android/assets/images/bg.png')}>
                     {
-                        this.state.isLoading?null:
+                        this.state.isLoading?
+                          
+<Animated.View style={{opacity:animeOpacity}}>
+
+<View
+    style={{
+    padding: 10
+}}>
+    <List
+        style={{
+        marginLeft: 0,
+        padding: 0
+    }}>
+    
+      
+  
+
+        <Animated.View style={{height:this.animatedHeaderHeight}}>
+     
+
+<Animated.View style={{position:'relative',top:10,opacity:this.animatedOpacity}}>
+<ListItem style={styles.myList}>
+        <Item style={{borderBottomWidth:0}}>
+       
+
+         <Text
+                style={{
+                color: '#fff',
+                fontSize: 20,
+                marginLeft:10
+            }}></Text>
+         </Item>
+            
+        </ListItem>
+<ListItem style={styles.myList}>
+        <Item style={{borderBottomWidth:0}}>
+       
+
+         <Text
+                style={{
+                color: '#fff',
+                fontSize: 15,
+                marginLeft:10
+            }}></Text>
+         </Item>
+
+
+
+
+           
+        </ListItem>
+<ListItem style={styles.myList}>
+
+
+<Item style={{borderBottomWidth:0}}>
+
+
+<Text
+style={{
+color: '#fff',
+fontSize: 15,
+marginLeft:10
+}}></Text>
+</Item>
+
+</ListItem>
+</Animated.View>
+
+        </Animated.View>
+
+
+    </List>
+</View>
+<View style={styles.div2}>
+
+    <ScrollView  >
+        <View
+            style={{
+            padding: 10
+        }}>
+         <Item>
+         
+
+         <Text
+                style={{
+                fontWeight: 'bold',
+                marginLeft:10
+            }}></Text>
+         </Item>
+            <View
+                style={{
+                
+                flexDirection: 'row'
+            }}>
+            <ScrollView showsHorizontalScrollIndicator={false} style={{}} horizontal={true}>
+
+        
+</ScrollView>
+            </View>
+
+        </View>
+
+        <View
+            style={{
+            padding: 10
+        }}>
+        <Item>
+
+         <Text
+                style={{
+                fontWeight: 'bold',
+                marginLeft:10
+            }}></Text>
+         </Item>
+
+         
+             
+               <View>
+
+                    <View
+                        style={{
+                        padding: 10,
+                        marginTop: 10,
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                       
+                    </View>
+             
+                       
+                       <View>
+                           <List>
+                           <ListItem itemDivider>
+                              
+
+                               </ListItem>
+                               <ListItem>
+                               <Text> </Text>
+
+                               </ListItem>
+                               <ListItem itemDivider>
+                              <Text></Text>
+
+                              </ListItem>
+                               <ListItem>
+                               <Text>}</Text>
+
+                               </ListItem>
+                               <ListItem itemDivider>
+                              <Text></Text>
+
+                              </ListItem>
+                               <ListItem>
+                               <Text></Text>
+
+                               </ListItem>
+
+                               <ListItem itemDivider>
+                              <Text></Text>
+
+                              </ListItem>
+                               <ListItem>
+                               <Text></Text>
+
+                               </ListItem>
+
+                               <ListItem itemDivider>
+                              <Text></Text>
+
+                              </ListItem>
+                               <ListItem>
+                               <Text></Text>
+
+                               </ListItem>
+
+                           </List>
+                           </View>
+             
+               
+           
+                </View>
+
+        </View>
+
+    </ScrollView>
+</View>
+
+</Animated.View>
+
+
+             
+                        :
                         <View>
 
 
@@ -567,7 +769,224 @@ setTimeout(()=>{
 
                         </View>
                     }
+
+                     <View>
+
+
+                        <View
+                            style={{
+                            padding: 10
+                        }}>
+                            <List
+                                style={{
+                                marginLeft: 0,
+                                padding: 0
+                            }}>
+                            
+                              
+                          
+
+                                <Animated.View style={{}}>
+                             
+
+<Animated.View style={{position:'relative',top:10,opacity:this.animatedOpacity}}>
+<ListItem style={styles.myList}>
+                                <Item style={{borderBottomWidth:0}}>
+                                 <Icon name='ios-briefcase' size={30} color="white"></Icon>
+
+                                 <Text
+                                        style={{
+                                        color: '#fff',
+                                        fontSize: 20,
+                                        marginLeft:10
+                                    }}>Company Name: {this.state.compName}</Text>
+                                 </Item>
+                                    
+                                </ListItem>
+<ListItem style={styles.myList}>
+                                <Item style={{borderBottomWidth:0}}>
+                                 <Icon name='ios-navigate' size={30} color="white"></Icon>
+
+                                 <Text
+                                        style={{
+                                        color: '#fff',
+                                        fontSize: 15,
+                                        marginLeft:10
+                                    }}>Company Location: {this.state.compLocation}</Text>
+                                 </Item>
+
+
+
+
+                                   
+                                </ListItem>
+<ListItem style={styles.myList}>
+
+
+<Item style={{borderBottomWidth:0}}>
+ <Icon name='ios-calendar' size={30} color="white"></Icon>
+
+ <Text
+        style={{
+        color: '#fff',
+        fontSize: 15,
+        marginLeft:10
+    }}>Date of Visit: {this.state.dateOfVisit}</Text>
+ </Item>
+  
+</ListItem>
+</Animated.View>
+
+                                </Animated.View>
+
+                       
+                            </List>
+                        </View>
+                        <View style={styles.div2}>
+
+                            <ScrollView>
+                                <View
+                                    style={{
+                                    padding: 10
+                                }}>
+                                 <Item>
+                                 <Icon name='ios-car' size={40} color="purple"></Icon>
+
+                                 <Text
+                                        style={{
+                                        fontWeight: 'bold',
+                                        marginLeft:10
+                                    }}>Vehicle Categories</Text>
+                                 </Item>
+                                    <View
+                                        style={{
+                                        
+                                        flexDirection: 'row'
+                                    }}>
+                                    <ScrollView showsHorizontalScrollIndicator={false} style={{}} horizontal={true}>
+
+                                        {this
+                                            .state
+                                            .vehicles
+                                            .map((vehicle) => {
+                                                return (
+                                                   <Text
+                                                        style={{
+                                                           borderWidth:1,borderColor:'orange',marginRight:20,padding:5,borderRadius:4,marginBottom:3,marginTop:10
+                                                    }}>{vehicle}</Text>
+                                                
+                                                )
+                                            })
+}
+</ScrollView>
+                                    </View>
+
+                                </View>
+
+                                <View
+                                    style={{
+                                    padding: 10
+                                }}>
+                                <Item>
+                                 <Icon name='ios-list' size={40} color="purple"></Icon>
+
+                                 <Text
+                                        style={{
+                                        fontWeight: 'bold',
+                                        marginLeft:10
+                                    }}>Automation details</Text>
+                                 </Item>
+
+                                    {this.state.automationData
+                                        ? null
+                                        : <View>
+
+                                            <View
+                                                style={{
+                                                padding: 10,
+                                                marginTop: 10,
+                                                flex: 1,
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
+                                            }}>
+                                               
+                                            </View>
+                                           {
+                                               this.state.companyDataExists?
+                                               
+                                               <View style={{}}>
+                                                   <List>
+                                                   <ListItem itemDivider>
+                                                      
+
+                                                       </ListItem>
+                                                       <ListItem>
+                                                       <Text>Software exits {this.state.softwareExists}</Text>
+
+                                                       </ListItem>
+                                                       <ListItem itemDivider>
+                                                      <Text>Name of software</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text>{this.state.softwareName}</Text>
+
+                                                       </ListItem>
+                                                       <ListItem itemDivider>
+                                                      <Text>Period of use</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text>{this.state.period_of_use}</Text>
+
+                                                       </ListItem>
+
+                                                       <ListItem itemDivider>
+                                                      <Text>Period it takes to update</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text> {this.state.updatePeriod}</Text>
+
+                                                       </ListItem>
+
+                                                       <ListItem itemDivider>
+                                                      <Text>Areas of improvement</Text>
+
+                                                      </ListItem>
+                                                       <ListItem>
+                                                       <Text>{this.state.improvementAreas}</Text>
+
+                                                       </ListItem>
+
+                                                   </List>
+                                                   </View>:
+                                             this.state.superUser?
+                                             <TouchableOpacity
+                                            onPress={()=>this.props.navigation.navigate('AutomationDetails',{compId:this.state.compId, compName:this.state.compName})}
+                                                style={{
+                                                alignItems: 'center',
+                                                marginTop: 10,
+                                                backgroundColor: '#ededed',
+                                                padding: 20,
+                                                borderRadius: 50
+                                            }}>
+                                                <Text>Add data</Text>
+                                            </TouchableOpacity>:<Text>No data available</Text>
+                                           }
+                                   
+                                        </View>
+}
+                                </View>
+
+                            </ScrollView>
+                        </View>
+
+                        </View>
                
+
+
+            
                     </ImageBackground>
 
                 </View>
